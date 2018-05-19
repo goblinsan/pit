@@ -7,13 +7,8 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class Bid {
+class BidView {
     private Player requester;
     private Player owner;
     private int amount;
-    private Commodity commodity;
-
-    BidView getView() {
-        return new BidView(requester,owner,amount);
-    }
 }

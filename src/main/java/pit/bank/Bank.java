@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public class Bank {
     Map<Player, EnumMap<Commodity, Integer>> holdings = new HashMap<>();
 
-    void initializeHoldings(List<Player> players) {
+    public void initializeHoldings(List<Player> players) {
         EnumMap<Commodity, Integer> availableCommodities = new EnumMap<>(Commodity.class);
         for (int i = 0; i < players.size(); i++) {
             availableCommodities.put(Commodity.values()[i],GameSettings.TOTAL_PER_COMMODITY);

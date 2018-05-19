@@ -2,23 +2,22 @@ package pit;
 
 import pit.bank.Bank;
 import pit.config.GameSettings;
-import pit.errors.BidOutOfBounds;
-import pit.errors.ErrorMessages;
-import pit.errors.GameError;
-import pit.errors.MarketSchedule;
+import pit.errors.*;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 class Game {
-
     private List<Offer> offerList = new ArrayList<>();
+
     private List<Bid> bids = new ArrayList<>();
     private List<Trade> trades = new ArrayList<>();
     private List<Player> players = new ArrayList<>();
     private TradeValidation tradeValidation;
+
     private Bank bank;
     private Market market;
     private Clock clock;
@@ -28,6 +27,10 @@ class Game {
         this.tradeValidation = tradeValidation;
         this.market = market;
         this.clock = clock;
+    }
+
+    LocalDateTime getClockTime() {
+        return LocalDateTime.now(clock);
     }
 
     GameMessage createPlayer(String username) {
@@ -41,6 +44,7 @@ class Game {
             throw new MarketSchedule(MarketState.ENROLLMENT_CLOSED, ErrorMessages.ENROLLMENT_NOT_OPEN);
         } else {
             players.add(player);
+            bank.initializeHoldings(players);
             return GameResponse.JOINED;
         }
     }
@@ -74,22 +78,36 @@ class Game {
         return GameResponse.REMOVED;
     }
 
-    GameMessage acceptBid(Bid bid, Commodity commodity) {
+    GameMessage acceptBid(BidView bidView, Commodity commodity) {
         isMarketClosed();
-        if (tradeValidation.playerCanSatisfyTrade(bid.getOwner(), bid.getAmount(), commodity)) {
+        Bid bid = getBidFromView(bidView);
+        if (tradeValidation.playerCanSatisfyTrade(bidView.getOwner(), bidView.getAmount(), commodity)) {
             List<Offer> referenceList = new ArrayList<>(offerList);
             for (Offer o : referenceList) {
-                if (bid.getRequester().getName().equals(o.getPlayer().getName()) || bid.getOwner().getName().equals(o.getPlayer().getName())) {
+                if (bidView.getRequester().getName().equals(o.getPlayer().getName()) || bidView.getOwner().getName().equals(o.getPlayer().getName())) {
                     offerList.remove(o);
                 }
                 bids.remove(bid);
             }
             bank.updateHoldings(bid, commodity);
-            trades.add(new Trade(bid.getRequester(), bid.getOwner(), bid.getAmount()));
+            trades.add(new Trade(bidView.getRequester(), bidView.getOwner(), bidView.getAmount()));
             return GameResponse.ACCEPTED;
         }
 
         throw new BidOutOfBounds(GameResponse.INVALID, ErrorMessages.PLAYER_CANNOT_SATISFY_BID);
+    }
+
+    Bid getBidFromView(BidView bidView) {
+        return getBids().stream()
+                .filter(b -> isViewEqualBid(bidView, b))
+                .findFirst().orElseThrow(() -> new BidNotFound(GameResponse.INVALID, ErrorMessages.BID_NOT_FOUND));
+    }
+
+    private boolean isViewEqualBid(BidView bidView, Bid bid) {
+        return (bid.getRequester().equals(bidView.getRequester())
+                && bid.getOwner().equals(bidView.getOwner())
+                && bid.getAmount() == bidView.getAmount()
+        );
     }
 
     GameMessage cornerMarket(Player player, Commodity commodity) {
@@ -105,6 +123,10 @@ class Game {
 
     List<Bid> getBids() {
         return bids;
+    }
+
+    List<BidView> getBidViews() {
+        return bids.stream().map(Bid::getView).collect(Collectors.toList());
     }
 
     List<Trade> getTrades() {

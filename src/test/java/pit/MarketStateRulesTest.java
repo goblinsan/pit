@@ -6,9 +6,12 @@ import pit.errors.ErrorMessages;
 import pit.errors.MarketSchedule;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.HashMap;
+import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
 
 public class MarketStateRulesTest {
 
@@ -17,6 +20,18 @@ public class MarketStateRulesTest {
     @Before
     public void setUp() {
         testObject = new Market();
+    }
+
+    @Test
+    public void canGetAllScheduledTimesAsMap() {
+        LocalDateTime timeInit = LocalDateTime.ofEpochSecond(0,0,ZoneOffset.UTC);
+        Map<String, LocalDateTime> expectedSchedule = new HashMap<>();
+        expectedSchedule.put("enrollmentStart", timeInit);
+        expectedSchedule.put("enrollmentEnd", timeInit);
+        expectedSchedule.put("marketStart", timeInit);
+        expectedSchedule.put("marketEnd", timeInit);
+
+        assertThat(testObject.getSchedule(), is(expectedSchedule));
     }
 
     @Test

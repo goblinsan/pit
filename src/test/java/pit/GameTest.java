@@ -42,6 +42,11 @@ public class GameTest {
     }
 
     @Test
+    public void canGetCurrentClockTime() {
+        assertEquals(LocalDateTime.now(clock), testObject.getClockTime());
+    }
+
+    @Test
     public void canCreatePlayer() {
         String username = "username";
         GameResponse expectedResponse = GameResponse.CREATED;
@@ -59,6 +64,8 @@ public class GameTest {
         assertEquals(expectedResponse, actualResponse);
         assertEquals(1, testObject.getPlayers().size());
         assertThat(player1, is(testObject.getPlayers().get(0)));
+
+        Mockito.verify(mockBank).initializeHoldings(testObject.getPlayers());
     }
 
     @Test
@@ -82,6 +89,7 @@ public class GameTest {
         }
         fail();
     }
+
 
     @Test
     public void acceptBidUpdatesGameState() {
@@ -114,7 +122,7 @@ public class GameTest {
         assertEquals(1, testObject.getBids().size());
         assertEquals(0, testObject.getTrades().size());
 
-        testObject.acceptBid(bid, Commodity.GOLD);
+        testObject.acceptBid(bid.getView(), Commodity.GOLD);
 
         // assert post-trade state
         assertEquals(0, testObject.getOffers().size());

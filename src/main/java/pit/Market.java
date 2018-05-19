@@ -5,6 +5,8 @@ import pit.errors.MarketSchedule;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.HashMap;
+import java.util.Map;
 
 class Market {
     private static final LocalDateTime timeInit = LocalDateTime.ofEpochSecond(0,0,ZoneOffset.UTC);
@@ -23,6 +25,15 @@ class Market {
         } else {
             return MarketState.CLOSED;
         }
+    }
+
+    Map<String, LocalDateTime> getSchedule() {
+        Map<String, LocalDateTime> schedule = new HashMap<>();
+        schedule.put("enrollmentStart", enrollmentStart);
+        schedule.put("enrollmentEnd", enrollmentEnd);
+        schedule.put("marketStart", marketStart);
+        schedule.put("marketEnd", marketEnd);
+        return schedule;
     }
 
     GameResponse scheduleEnrollment(LocalDateTime startTime) {

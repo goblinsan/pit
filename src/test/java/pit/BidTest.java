@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 import pit.bank.Bank;
+import pit.errors.BidNotFound;
 import pit.errors.BidOutOfBounds;
 import pit.errors.ErrorMessages;
 import pit.errors.MarketSchedule;
@@ -14,12 +15,10 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
 
 public class BidTest {
 
@@ -70,6 +69,32 @@ public class BidTest {
     }
 
     @Test
+    public void provideViewOfBidsWithoutCommodity() {
+        List<BidView> expectedList = Collections.singletonList(goodBid.getView());
+        testObject.submitBid(goodBid);
+
+        assertThat(testObject.getBidViews(), is(expectedList));
+    }
+
+    @Test
+    public void canGetBidFromView() {
+        testObject.submitBid(goodBid);
+        assertEquals(goodBid, testObject.getBidFromView(goodBid.getView()));
+    }
+
+    @Test
+    public void throwErrorWhenBidNotFound() {
+        try {
+            testObject.acceptBid(goodBid.getView(), Commodity.GOLD);
+        } catch (BidNotFound e) {
+            assertEquals(GameResponse.INVALID, e.getStatus());
+            assertEquals(ErrorMessages.BID_NOT_FOUND, e.getMessage());
+            return;
+        }
+        fail();
+    }
+
+    @Test
     public void playerCanRemoveTheirOwnBid() {
         testObject.submitBid(goodBid);
         assertEquals(1, testObject.getBids().size());
@@ -110,18 +135,20 @@ public class BidTest {
 
     @Test
     public void ownerCanAcceptBid() {
-        GameMessage actualResponse = testObject.acceptBid(goodBid, Commodity.CATTLE);
+        testObject.submitBid(goodBid);
+        GameMessage actualResponse = testObject.acceptBid(goodBid.getView(), Commodity.CATTLE);
         assertEquals(GameResponse.ACCEPTED, actualResponse);
     }
 
     @Test
     public void playerNeedsToOwnAmountOfCommodityInBidBeforeAccepting() {
         Bid badBidTooManyRequested = new Bid(requester, owner, 4, Commodity.GOLD);
+        testObject.submitBid(badBidTooManyRequested);
 
         thrown.expect(BidOutOfBounds.class);
         thrown.expectMessage(ErrorMessages.PLAYER_CANNOT_SATISFY_BID);
 
-        testObject.acceptBid(badBidTooManyRequested, Commodity.CATTLE);
+        testObject.acceptBid(badBidTooManyRequested.getView(), Commodity.CATTLE);
     }
 
     @Test
@@ -132,17 +159,15 @@ public class BidTest {
         } catch (MarketSchedule e) {
             assertEquals(MarketState.CLOSED, e.getStatus());
             assertEquals(ErrorMessages.MARKET_NOT_OPEN, e.getMessage());
-            return;
         }
         try {
             testObject.removeBid(goodBid);
         } catch (MarketSchedule e) {
             assertEquals(MarketState.CLOSED, e.getStatus());
             assertEquals(ErrorMessages.MARKET_NOT_OPEN, e.getMessage());
-            return;
         }
         try {
-            testObject.acceptBid(goodBid, Commodity.GOLD);
+            testObject.acceptBid(goodBid.getView(), Commodity.GOLD);
         } catch (MarketSchedule e) {
             assertEquals(MarketState.CLOSED, e.getStatus());
             assertEquals(ErrorMessages.MARKET_NOT_OPEN, e.getMessage());
