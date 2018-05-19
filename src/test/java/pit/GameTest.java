@@ -44,10 +44,10 @@ public class GameTest {
     @Test
     public void canCreatePlayer() {
         String username = "username";
-        Player expectedPlayer = new Player(username);
-        Player actualPlayer = testObject.createPlayer(username);
+        GameResponse expectedResponse = GameResponse.CREATED;
+        GameMessage actualResponse = testObject.createPlayer(username);
 
-        assertEquals(expectedPlayer, actualPlayer);
+        assertEquals(expectedResponse, actualResponse);
     }
 
     @Test

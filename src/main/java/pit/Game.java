@@ -30,8 +30,8 @@ class Game {
         this.clock = clock;
     }
 
-    Player createPlayer(String username) {
-        return new Player(username);
+    GameMessage createPlayer(String username) {
+        return GameResponse.CREATED;
     }
 
     GameMessage join(Player player) {
@@ -113,6 +113,14 @@ class Game {
 
     List<Player> getPlayers() {
         return players;
+    }
+
+    Market getMarket() {
+        return market;
+    }
+
+    Bank getBank() {
+        return bank;
     }
 
     private void isMarketClosed() {

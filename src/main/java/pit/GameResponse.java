@@ -7,5 +7,6 @@ public enum GameResponse implements GameMessage {
     INVALID,
     REMOVED,
     SCHEDULED,
-    UNSCHEDULED
+    UNSCHEDULED,
+    CREATED
 }
