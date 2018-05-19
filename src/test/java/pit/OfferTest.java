@@ -7,24 +7,29 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 import pit.bank.Bank;
 import pit.errors.ErrorMessages;
+import pit.errors.MarketSchedule;
 import pit.errors.OfferOutOfBounds;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class OfferTest {
 
     private Game testObject;
     private Player player1 = new Player("player 1");
     private Player player2 = new Player("player 2");
-
     private List<Offer> expectedOffers = new ArrayList<>();
     private Offer expectedOffer;
     private Offer expectedOffer2;
     private Map<Player, EnumMap<Commodity, Integer>> mockHoldings;
     private Bank mockBank;
+    private Market mockMarket;
+    private Clock clock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
 
 
     @Before
@@ -47,17 +52,19 @@ public class OfferTest {
         mockHoldings.put(player2, player2Holding);
 
         mockBank = Mockito.mock(Bank.class);
+        mockMarket = Mockito.mock(Market.class);
         TradeValidation tradeValidation = new TradeValidation(mockBank);
-        testObject = new Game(mockBank, tradeValidation);
+        testObject = new Game(mockBank, tradeValidation, mockMarket, clock);
+
+        Mockito.when(mockBank.getHoldings()).thenReturn(mockHoldings);
+        Mockito.when(mockMarket.getState(Mockito.any(LocalDateTime.class))).thenReturn(MarketState.OPEN);
     }
 
     @Rule
-    public ExpectedException thrown =  ExpectedException.none();
+    public ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void getOffers() {
-        Mockito.when(mockBank.getHoldings()).thenReturn(mockHoldings);
-
         testObject.submitOffer(expectedOffer);
         testObject.submitOffer(expectedOffer2);
 
@@ -70,7 +77,7 @@ public class OfferTest {
 
     @Test
     public void offerShouldBeGreaterThanZero() {
-        Offer badOffer = new Offer(player1,-1);
+        Offer badOffer = new Offer(player1, -1);
 
         thrown.expect(OfferOutOfBounds.class);
         thrown.expectMessage(ErrorMessages.OFFER_LESS_THAN_ZERO);
@@ -80,8 +87,7 @@ public class OfferTest {
 
     @Test
     public void playerNeedsToOwnAmountInOffer() {
-        Mockito.when(mockBank.getHoldings()).thenReturn(mockHoldings);
-        Offer badOffer = new Offer(player1,20);
+        Offer badOffer = new Offer(player1, 20);
 
         thrown.expect(OfferOutOfBounds.class);
         thrown.expectMessage(ErrorMessages.PLAYER_CANNOT_SATISFY_OFFER);
@@ -91,7 +97,6 @@ public class OfferTest {
 
     @Test
     public void playerCanOnlyHaveOneOffer() {
-        Mockito.when(mockBank.getHoldings()).thenReturn(mockHoldings);
         testObject.submitOffer(expectedOffer);
         testObject.submitOffer(expectedOffer2);
 
@@ -99,23 +104,43 @@ public class OfferTest {
         expectedOffer = new Offer(player1, 1);
         expectedOffers.add(expectedOffer);
 
-        GameResponse actualResponse = testObject.submitOffer(expectedOffer);
+        GameErrors actualResponse = testObject.submitOffer(expectedOffer);
 
-        assertEquals(GameResponse.ACCEPTED, actualResponse);
-        Offer actualOffer = testObject.getOffers().stream().filter(o -> o.getPlayer().equals(player1)).findFirst().get();
+        assertEquals(GameErrors.ACCEPTED, actualResponse);
+        Offer emptyOffer = new Offer(new Player("empty"),0);
+        Offer actualOffer = testObject.getOffers().stream().filter(o -> o.getPlayer().equals(player1)).findFirst().orElse(emptyOffer);
         assertEquals(expectedOffers.get(1).getPlayer().getName(), actualOffer.getPlayer().getName());
         assertEquals(expectedOffers.get(1).getAmount(), actualOffer.getAmount());
     }
 
     @Test
     public void playerCanRemoveTheirOwnOffer() {
-        Mockito.when(mockBank.getHoldings()).thenReturn(mockHoldings);
         testObject.submitOffer(expectedOffer);
         assertEquals(expectedOffers.get(0).getPlayer(), testObject.getOffers().get(0).getPlayer());
         assertEquals(expectedOffers.get(0).getAmount(), testObject.getOffers().get(0).getAmount());
 
-        GameResponse actualResponse = testObject.removeOffer(expectedOffer);
-        assertEquals(GameResponse.REMOVED, actualResponse);
+        GameErrors actualResponse = testObject.removeOffer(expectedOffer);
+        assertEquals(GameErrors.REMOVED, actualResponse);
         assertEquals(0, testObject.getOffers().size());
     }
+
+    @Test
+    public void playerCannotActionOffersIfMarketIsClosed() {
+        Mockito.when(mockMarket.getState(Mockito.any(LocalDateTime.class))).thenReturn(MarketState.CLOSED);
+        try {
+            testObject.submitOffer(expectedOffer);
+        } catch (MarketSchedule e) {
+            assertEquals(MarketState.CLOSED, e.getStatus());
+            assertEquals(ErrorMessages.MARKET_NOT_OPEN, e.getMessage());
+        }
+        try {
+            testObject.removeOffer(expectedOffer);
+        } catch (MarketSchedule e) {
+            assertEquals(MarketState.CLOSED, e.getStatus());
+            assertEquals(ErrorMessages.MARKET_NOT_OPEN, e.getMessage());
+            return;
+        }
+        fail();
+    }
+
 }

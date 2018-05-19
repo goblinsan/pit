@@ -1,16 +1,16 @@
 package pit.errors;
 
-import pit.GameResponse;
+import pit.GameMessage;
 
 public class GameError extends RuntimeException {
-    GameResponse status;
+    private GameMessage status;
 
-    public GameError(GameResponse status, String message) {
+    public GameError(GameMessage status, String message) {
         super(message);
         this.status = status;
     }
 
-    public GameResponse getStatus() {
+    public GameMessage getStatus() {
         return status;
     }
 }

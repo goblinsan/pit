@@ -15,20 +15,20 @@ class TradeValidation {
 
     boolean isValidOffer(Offer offer) {
         if (offer.getAmount() < 1) {
-            throw new OfferOutOfBounds(GameResponse.INVALID, ErrorMessages.OFFER_LESS_THAN_ZERO);
+            throw new OfferOutOfBounds(GameErrors.INVALID, ErrorMessages.OFFER_LESS_THAN_ZERO);
         }
         if (playerDoesNotHaveEnoughMatchingCards(offer.getPlayer(), offer.getAmount())) {
-            throw new OfferOutOfBounds(GameResponse.INVALID, ErrorMessages.PLAYER_CANNOT_SATISFY_OFFER);
+            throw new OfferOutOfBounds(GameErrors.INVALID, ErrorMessages.PLAYER_CANNOT_SATISFY_OFFER);
         }
         return true;
     }
 
     boolean isValidBid(Bid bid) {
         if (bid.getAmount() < 1) {
-            throw new BidOutOfBounds(GameResponse.INVALID, ErrorMessages.BID_LESS_THAN_ZERO);
+            throw new BidOutOfBounds(GameErrors.INVALID, ErrorMessages.BID_LESS_THAN_ZERO);
         }
         if (!playerCanSatisfyTrade(bid.getRequester(), bid.getAmount(), bid.getCommodity())) {
-            throw new BidOutOfBounds(GameResponse.INVALID, ErrorMessages.PLAYER_CANNOT_SATISFY_BID);
+            throw new BidOutOfBounds(GameErrors.INVALID, ErrorMessages.PLAYER_CANNOT_SATISFY_BID);
         }
         return true;
     }

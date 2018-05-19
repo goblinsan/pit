@@ -64,4 +64,8 @@ public class Bank {
     public Map<Player, EnumMap<Commodity, Integer>> getHoldings() {
         return holdings;
     }
+
+    EnumMap<Commodity, Integer> getPortfolio(Player player1) {
+        return holdings.get(player1);
+    }
 }

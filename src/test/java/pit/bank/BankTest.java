@@ -1,5 +1,6 @@
 package pit.bank;
 
+import org.junit.Before;
 import org.junit.Test;
 import pit.Bid;
 import pit.Commodity;
@@ -12,13 +13,27 @@ import static org.junit.Assert.assertEquals;
 public class BankTest {
     private Player player1 = new Player("player 1");
     private Player player2 = new Player("player 2");
+    private Bank testObject;
+
+    @Before
+    public void setUp() {
+        testObject = new Bank();
+    }
+
+    @Test
+    public void playerCanGetPortfolio() {
+        List<Player> players = Arrays.asList(player1,player2);
+        testObject.initializeHoldings(players);
+        EnumMap<Commodity,Integer> actualPortfolio = testObject.getPortfolio(player1);
+
+        assertEquals(9, actualPortfolio.values().stream().mapToInt(Integer::intValue).sum());
+        assertEquals(players.size(), actualPortfolio.size());
+    }
 
     @Test
     public void gameAssignsInitialHoldings() {
         //Total commodities per player must equal 9
         //Total type of commodities assigned must equal number of players
-
-        Bank testObject = new Bank();
 
         Player player3 = new Player("player 3");
         Player player4 = new Player("player 4");
@@ -32,7 +47,7 @@ public class BankTest {
         Arrays.stream(Commodity.values()).forEach(commodity -> totalCommodityCount.put(commodity, 0));
         actualHoldings.forEach((player, playerHoldings) -> {
             assertEquals(9, playerHoldings.values().stream().mapToInt(Integer::intValue).sum());
-            assertEquals(playerHoldings.size(), players.size());
+            assertEquals(players.size(), playerHoldings.size());
             playerHoldings.forEach((c,i)-> totalCommodityCount.put(c, totalCommodityCount.get(c)+i));
         });
         // Check that each distributed commodity count equals 9
@@ -70,7 +85,6 @@ public class BankTest {
         holdings.put(player1, player1Holding);
         holdings.put(player2, player2Holding);
 
-        Bank testObject = new Bank();
         testObject.holdings = holdings;
 
         testObject.updateHoldings(bid, Commodity.OIL);

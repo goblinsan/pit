@@ -1,15 +1,16 @@
 package pit;
 
-import lombok.EqualsAndHashCode;
 import pit.bank.Bank;
 import pit.errors.BidOutOfBounds;
 import pit.errors.ErrorMessages;
 import pit.errors.GameError;
+import pit.errors.MarketSchedule;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@EqualsAndHashCode
 class Game {
 
     private List<Offer> offerList = new ArrayList<>();
@@ -18,50 +19,62 @@ class Game {
     private List<Player> players = new ArrayList<>();
     private TradeValidation tradeValidation;
     private Bank bank;
+    private Market market;
+    private Clock clock;
 
-    Game(Bank bank, TradeValidation tradeValidation) {
+    Game(Bank bank, TradeValidation tradeValidation, Market market, Clock clock) {
         this.bank = bank;
         this.tradeValidation = tradeValidation;
+        this.market = market;
+        this.clock = clock;
     }
 
     Player createPlayer(String username) {
         return new Player(username);
     }
 
-    GameResponse join(Player player) {
+    GameErrors join(Player player) {
         if (players.contains(player)) {
-            throw new GameError(GameResponse.INVALID, ErrorMessages.PLAYER_CANNOT_JOIN_MORE_THAN_ONCE);
+            throw new GameError(GameErrors.INVALID, ErrorMessages.PLAYER_CANNOT_JOIN_MORE_THAN_ONCE);
+        } else if (!market.getState(LocalDateTime.now(clock)).equals(MarketState.ENROLLMENT_OPEN)) {
+            throw new MarketSchedule(MarketState.ENROLLMENT_CLOSED, ErrorMessages.ENROLLMENT_NOT_OPEN);
         } else {
             players.add(player);
-            return GameResponse.JOINED;
+            return GameErrors.JOINED;
         }
     }
 
-    GameResponse submitOffer(Offer offer) {
+    GameErrors submitOffer(Offer offer) {
+        isMarketClosed();
         tradeValidation.isValidOffer(offer);
         List<Offer> referenceList = new ArrayList<>(offerList);
         referenceList.stream().filter(o -> offer.getPlayer().equals(o.getPlayer())).findAny().map(o -> offerList.remove(o));
         offerList.add(offer);
-        return GameResponse.ACCEPTED;
+        return GameErrors.ACCEPTED;
     }
 
-    GameResponse removeOffer(Offer offer) {
+    GameErrors removeOffer(Offer offer) {
+        isMarketClosed();
+
         offerList.remove(offer);
-        return GameResponse.REMOVED;
+        return GameErrors.REMOVED;
     }
 
-    GameResponse submitBid(Bid bid) {
+    GameErrors submitBid(Bid bid) {
+        isMarketClosed();
         tradeValidation.isValidBid(bid);
         bids.add(bid);
-        return GameResponse.ACCEPTED;
+        return GameErrors.ACCEPTED;
     }
 
-    GameResponse removeBid(Bid bid) {
+    GameErrors removeBid(Bid bid) {
+        isMarketClosed();
         bids.remove(bid);
-        return GameResponse.REMOVED;
+        return GameErrors.REMOVED;
     }
 
-    GameResponse acceptBid(Bid bid, Commodity commodity) {
+    GameErrors acceptBid(Bid bid, Commodity commodity) {
+        isMarketClosed();
         if (tradeValidation.playerCanSatisfyTrade(bid.getOwner(), bid.getAmount(), commodity)) {
             List<Offer> referenceList = new ArrayList<>(offerList);
             for (Offer o : referenceList) {
@@ -72,10 +85,10 @@ class Game {
             }
             bank.updateHoldings(bid, commodity);
             trades.add(new Trade(bid.getRequester(), bid.getOwner(), bid.getAmount()));
-            return GameResponse.ACCEPTED;
+            return GameErrors.ACCEPTED;
         }
 
-        throw new BidOutOfBounds(GameResponse.INVALID, ErrorMessages.PLAYER_CANNOT_SATISFY_BID);
+        throw new BidOutOfBounds(GameErrors.INVALID, ErrorMessages.PLAYER_CANNOT_SATISFY_BID);
     }
 
     List<Offer> getOffers() {
@@ -92,6 +105,12 @@ class Game {
 
     List<Player> getPlayers() {
         return players;
+    }
+
+    private void isMarketClosed() {
+        if(!market.getState(LocalDateTime.now(clock)).equals(MarketState.OPEN)){
+            throw new MarketSchedule(MarketState.CLOSED, ErrorMessages.MARKET_NOT_OPEN);
+        }
     }
 
 }

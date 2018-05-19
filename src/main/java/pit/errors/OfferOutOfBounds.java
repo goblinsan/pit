@@ -1,9 +1,9 @@
 package pit.errors;
 
-import pit.GameResponse;
+import pit.GameErrors;
 
 public class OfferOutOfBounds extends GameError {
-    public OfferOutOfBounds(GameResponse status, String message) {
+    public OfferOutOfBounds(GameErrors status, String message) {
         super(status, message);
     }
 }

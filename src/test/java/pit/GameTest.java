@@ -8,13 +8,17 @@ import org.mockito.Mockito;
 import pit.bank.Bank;
 import pit.errors.ErrorMessages;
 import pit.errors.GameError;
+import pit.errors.MarketSchedule;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 public class GameTest {
 
@@ -23,6 +27,8 @@ public class GameTest {
 
     private Bank mockBank;
     private TradeValidation mockTradeValidation;
+    private Market mockMarket;
+    private Clock clock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -31,7 +37,8 @@ public class GameTest {
     public void setUp() {
         mockBank = Mockito.mock(Bank.class);
         mockTradeValidation = Mockito.mock(TradeValidation.class);
-        testObject = new Game(mockBank, mockTradeValidation);
+        mockMarket = Mockito.mock(Market.class);
+        testObject = new Game(mockBank, mockTradeValidation, mockMarket, clock);
     }
 
     @Test
@@ -45,8 +52,9 @@ public class GameTest {
 
     @Test
     public void canPlayerCanJoin() {
-        GameResponse expectedResponse = GameResponse.JOINED;
-        GameResponse actualResponse = testObject.join(player1);
+        Mockito.when(mockMarket.getState(Mockito.any(LocalDateTime.class))).thenReturn(MarketState.ENROLLMENT_OPEN);
+        GameErrors expectedResponse = GameErrors.JOINED;
+        GameErrors actualResponse = testObject.join(player1);
 
         assertEquals(expectedResponse, actualResponse);
         assertEquals(1, testObject.getPlayers().size());
@@ -55,10 +63,24 @@ public class GameTest {
 
     @Test
     public void playerCantJoinTwice() {
+        Mockito.when(mockMarket.getState(Mockito.any(LocalDateTime.class))).thenReturn(MarketState.ENROLLMENT_OPEN);
         testObject.join(player1);
         thrown.expect(GameError.class);
         thrown.expectMessage(ErrorMessages.PLAYER_CANNOT_JOIN_MORE_THAN_ONCE);
         testObject.join(player1);
+    }
+
+    @Test
+    public void playerCantJoinIfEnrollmentIsClosed() {
+        Mockito.when(mockMarket.getState(Mockito.any(LocalDateTime.class))).thenReturn(MarketState.CLOSED);
+        try {
+            testObject.join(player1);
+        } catch (MarketSchedule e) {
+            assertEquals(MarketState.ENROLLMENT_CLOSED, e.getStatus());
+            assertEquals(ErrorMessages.ENROLLMENT_NOT_OPEN, e.getMessage());
+            return;
+        }
+        fail();
     }
 
     @Test
@@ -71,14 +93,15 @@ public class GameTest {
             - Add the executed trade to the list
          */
 
+        Mockito.when(mockMarket.getState(Mockito.any(LocalDateTime.class))).thenReturn(MarketState.OPEN);
         Mockito.when(mockTradeValidation.isValidOffer(Mockito.any(Offer.class))).thenReturn(true);
         Mockito.when(mockTradeValidation.isValidBid(Mockito.any(Bid.class))).thenReturn(true);
         Mockito.when(mockTradeValidation.playerCanSatisfyTrade(Mockito.any(Player.class),Mockito.any(Integer.class),Mockito.any(Commodity.class))).thenReturn(true);
 
         Player player2 = new Player("player 2");
 
-        Offer offer = new Offer(player1, 3);;
-        Offer offer2 = new Offer(player2, 2);;
+        Offer offer = new Offer(player1, 3);
+        Offer offer2 = new Offer(player2, 2);
 
         Bid bid = new Bid(player1, player2, 2, Commodity.OIL);
 
