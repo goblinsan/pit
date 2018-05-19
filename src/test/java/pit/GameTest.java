@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 import pit.bank.Bank;
+import pit.config.GameSettings;
 import pit.errors.ErrorMessages;
 import pit.errors.GameError;
 import pit.errors.MarketSchedule;
@@ -14,8 +15,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
@@ -130,8 +130,25 @@ public class GameTest {
 
     @Test
     public void playerWins() {
+        EnumMap<Commodity, Integer> player1Holding = new EnumMap<>(Commodity.class);
+        player1Holding.put(Commodity.GOLD, GameSettings.TOTAL_PER_COMMODITY);
+        Map<Player, EnumMap<Commodity, Integer>> holdings = new HashMap<>();
+        holdings.put(player1, player1Holding);
+        Mockito.when(mockBank.getHoldings()).thenReturn(holdings);
         GameMessage actualMessage = testObject.cornerMarket(player1, Commodity.GOLD);
 
         assertEquals(GameResponse.ACCEPTED, actualMessage);
+    }
+
+    @Test
+    public void playerDoesNotWinWithoutHoldingAll() {
+        EnumMap<Commodity, Integer> player1Holding = new EnumMap<>(Commodity.class);
+        player1Holding.put(Commodity.GOLD, 0);
+        Map<Player, EnumMap<Commodity, Integer>> holdings = new HashMap<>();
+        holdings.put(player1, player1Holding);
+        Mockito.when(mockBank.getHoldings()).thenReturn(holdings);
+        GameMessage actualMessage = testObject.cornerMarket(player1, Commodity.GOLD);
+
+        assertEquals(GameResponse.REJECTED, actualMessage);
     }
 }

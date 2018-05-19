@@ -5,6 +5,7 @@ import org.junit.Test;
 import pit.Bid;
 import pit.Commodity;
 import pit.Player;
+import pit.config.GameSettings;
 
 import java.util.*;
 
@@ -26,13 +27,13 @@ public class BankTest {
         testObject.initializeHoldings(players);
         EnumMap<Commodity,Integer> actualPortfolio = testObject.getPortfolio(player1);
 
-        assertEquals(9, actualPortfolio.values().stream().mapToInt(Integer::intValue).sum());
+        assertEquals(GameSettings.TOTAL_PER_COMMODITY, actualPortfolio.values().stream().mapToInt(Integer::intValue).sum());
         assertEquals(players.size(), actualPortfolio.size());
     }
 
     @Test
     public void gameAssignsInitialHoldings() {
-        //Total commodities per player must equal 9
+        //Total commodities per player must equal Total Per Commodity(Game Settings)
         //Total type of commodities assigned must equal number of players
 
         Player player3 = new Player("player 3");
@@ -46,12 +47,12 @@ public class BankTest {
         EnumMap<Commodity, Integer> totalCommodityCount = new EnumMap<>(Commodity.class);
         Arrays.stream(Commodity.values()).forEach(commodity -> totalCommodityCount.put(commodity, 0));
         actualHoldings.forEach((player, playerHoldings) -> {
-            assertEquals(9, playerHoldings.values().stream().mapToInt(Integer::intValue).sum());
+            assertEquals(GameSettings.TOTAL_PER_COMMODITY, playerHoldings.values().stream().mapToInt(Integer::intValue).sum());
             assertEquals(players.size(), playerHoldings.size());
             playerHoldings.forEach((c,i)-> totalCommodityCount.put(c, totalCommodityCount.get(c)+i));
         });
-        // Check that each distributed commodity count equals 9
-        totalCommodityCount.values().stream().filter(i -> i > 0).forEach(i -> assertEquals(9, (int) i));
+        // Check that each distributed commodity count equals Total Per Commodity
+        totalCommodityCount.values().stream().filter(i -> i > 0).forEach(i -> assertEquals(GameSettings.TOTAL_PER_COMMODITY, (int) i));
     }
 
     @Test

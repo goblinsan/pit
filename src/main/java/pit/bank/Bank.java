@@ -3,6 +3,7 @@ package pit.bank;
 import pit.Bid;
 import pit.Commodity;
 import pit.Player;
+import pit.config.GameSettings;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -14,14 +15,14 @@ public class Bank {
     void initializeHoldings(List<Player> players) {
         EnumMap<Commodity, Integer> availableCommodities = new EnumMap<>(Commodity.class);
         for (int i = 0; i < players.size(); i++) {
-            availableCommodities.put(Commodity.values()[i],9);
+            availableCommodities.put(Commodity.values()[i],GameSettings.TOTAL_PER_COMMODITY);
         }
 
         for (Player player : players) {
             EnumMap<Commodity, Integer> portfolio = new EnumMap<>(Commodity.class);
             availableCommodities.keySet().forEach(commodity -> portfolio.put(commodity, 0));
             List<Commodity> selectedCommodities = new ArrayList<>();
-            for (int i = 0; i < 9; i++) {
+            for (int i = 0; i < GameSettings.TOTAL_PER_COMMODITY; i++) {
                 boolean selected = false;
                 while (!selected){
                     int randomNum = ThreadLocalRandom.current().nextInt(0, players.size());

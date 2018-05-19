@@ -1,6 +1,7 @@
 package pit;
 
 import pit.bank.Bank;
+import pit.config.GameSettings;
 import pit.errors.BidOutOfBounds;
 import pit.errors.ErrorMessages;
 import pit.errors.GameError;
@@ -91,6 +92,13 @@ class Game {
         throw new BidOutOfBounds(GameResponse.INVALID, ErrorMessages.PLAYER_CANNOT_SATISFY_BID);
     }
 
+    GameMessage cornerMarket(Player player, Commodity commodity) {
+        if (bank.getHoldings().get(player).get(commodity).equals(GameSettings.TOTAL_PER_COMMODITY)){
+            return GameResponse.ACCEPTED;
+        }
+        return GameResponse.REJECTED;
+    }
+
     List<Offer> getOffers() {
         return offerList;
     }
@@ -111,9 +119,5 @@ class Game {
         if(!market.getState(LocalDateTime.now(clock)).equals(MarketState.OPEN)){
             throw new MarketSchedule(MarketState.CLOSED, ErrorMessages.MARKET_NOT_OPEN);
         }
-    }
-
-    GameMessage cornerMarket(Player player, Commodity commodity) {
-        return null;
     }
 }
