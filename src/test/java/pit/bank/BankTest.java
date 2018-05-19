@@ -72,10 +72,10 @@ public class BankTest {
 
          */
 
-        Bid bid = new Bid(player1, player2, 2, Commodity.GOLD);
+        Bid bid = new Bid(player1, player2, 3, Commodity.GOLD);
         EnumMap<Commodity, Integer> player1Holding = new EnumMap<>(Commodity.class);
         player1Holding.put(Commodity.GOLD, 5);
-        player1Holding.put(Commodity.OIL, 0);
+        player1Holding.put(Commodity.OIL, 4);
         EnumMap<Commodity, Integer> player2Holding = new EnumMap<>(Commodity.class);
         player2Holding.put(Commodity.OIL, 4);
         player2Holding.put(Commodity.GOLD, 0);
@@ -92,11 +92,11 @@ public class BankTest {
 
         // Assert end state of holdings
         //player one post
-        assertEquals(3, testObject.getHoldings().get(player1).get(Commodity.GOLD).intValue());
-        assertEquals(2, testObject.getHoldings().get(player1).get(Commodity.OIL).intValue());
+        assertEquals(2, testObject.getHoldings().get(player1).get(Commodity.GOLD).intValue());
+        assertEquals(7, testObject.getHoldings().get(player1).get(Commodity.OIL).intValue());
         //player 2 post
-        assertEquals(2, testObject.getHoldings().get(player2).get(Commodity.OIL).intValue());
-        assertEquals(2, testObject.getHoldings().get(player2).get(Commodity.GOLD).intValue());
+        assertEquals(1, testObject.getHoldings().get(player2).get(Commodity.OIL).intValue());
+        assertEquals(3, testObject.getHoldings().get(player2).get(Commodity.GOLD).intValue());
 
     }
 }

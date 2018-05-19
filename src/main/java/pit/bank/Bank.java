@@ -13,6 +13,7 @@ public class Bank {
     Map<Player, EnumMap<Commodity, Integer>> holdings = new HashMap<>();
 
     public void initializeHoldings(List<Player> players) {
+        holdings = new HashMap<>();
         EnumMap<Commodity, Integer> availableCommodities = new EnumMap<>(Commodity.class);
         for (int i = 0; i < players.size(); i++) {
             availableCommodities.put(Commodity.values()[i],GameSettings.TOTAL_PER_COMMODITY);
@@ -57,8 +58,8 @@ public class Bank {
         Integer updatedOwnerInboundValue = ownerHolding.get(bid.getCommodity()) + bid.getAmount();
         Integer updatedOwnerOutboundValue = ownerHolding.get(commodity) - bid.getAmount();
 
-        ownerHolding.put(commodity, updatedOwnerInboundValue);
-        ownerHolding.put(bid.getCommodity(), updatedOwnerOutboundValue);
+        ownerHolding.put(commodity, updatedOwnerOutboundValue);
+        ownerHolding.put(bid.getCommodity(), updatedOwnerInboundValue);
         holdings.put(bid.getOwner(), ownerHolding);
     }
 

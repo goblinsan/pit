@@ -24,7 +24,7 @@ public class GameApp {
     }
 
     @Command
-    public String joinGame(String name) {
+    public String join(String name) {
         try {
             return game.join(new Player(name)).toString();
         } catch (GameError e) {
@@ -33,7 +33,7 @@ public class GameApp {
     }
 
     @Command
-    public String startGame() {
+    public String start() {
         try {
             return game.getMarket().scheduleEnrollment(LocalDateTime.now(gameClock)).toString();
         } catch (GameError e) {
@@ -42,7 +42,7 @@ public class GameApp {
     }
 
     @Command
-    public String getPortfolio(String name) {
+    public String hand(String name) {
         try {
             Player player = new Player(name);
             return game.getBank().getHoldings().get(player).toString();
