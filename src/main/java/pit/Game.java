@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 class Game {
     private List<Offer> offerList = new ArrayList<>();
-
     private List<Bid> bids = new ArrayList<>();
     private List<Trade> trades = new ArrayList<>();
     private List<Player> players = new ArrayList<>();

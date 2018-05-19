@@ -9,6 +9,9 @@ import pit.errors.GameError;
 import java.io.IOException;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
 
 public class GameApp {
 
@@ -17,6 +20,7 @@ public class GameApp {
     private static Market market = new Market();
     private static Clock gameClock = Clock.systemDefaultZone();
     private static Game game;
+    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     @Command
     public String createPlayer(String name) {
@@ -53,12 +57,17 @@ public class GameApp {
 
     @Command
     public String time() {
-        return game.getClockTime().toLocalTime().toString();
+        return game.getClockTime().toLocalTime().format(formatter);
     }
 
     @Command
     public String schedule() {
-        return game.getMarket().getSchedule().toString();
+        Map<String, LocalDateTime> schedule = game.getMarket().getSchedule();
+
+        return "Enrollment Opens : "+ schedule.get("enrollmentStart").toLocalTime().format(formatter) + "\n" +
+                "Enrollment Ends : "+ schedule.get("enrollmentEnd").toLocalTime().format(formatter) + "\n" +
+                "Market Opens : "+ schedule.get("marketStart").toLocalTime().format(formatter) + "\n" +
+                "Market Closes : "+ schedule.get("marketEnd").toLocalTime().format(formatter);
     }
 
     @Command
@@ -127,6 +136,24 @@ public class GameApp {
         } catch (GameError e) {
             return e.getMessage();
         }
+    }
+
+    @Command
+    public String offers() {
+        List<Offer> offers = game.getOffers();
+        return offers.stream().map(o -> o.getPlayer().getName() + " : " + o.getAmount() + "\n").reduce(String::concat).orElse("");
+    }
+
+    @Command
+    public String bids() {
+        List<BidView> bids = game.getBidViews();
+        return bids.stream().map(b -> "Requester: " + b.getRequester().getName() +  " | Owner: "  + b.getOwner().getName() + " | Amount: " + b.getAmount() + "\n").reduce(String::concat).orElse("");
+    }
+
+    @Command
+    public String trades() {
+        List<Trade> trades = game.getTrades();
+        return trades.stream().map(t -> t.requester.getName() + " <-> " + t.owner.getName() + " | Amount: " + t.amount  + "\n").reduce(String::concat).orElse("");
     }
 
     public static void main(String[] args) throws IOException {
