@@ -33,7 +33,7 @@ class Game {
         return new Player(username);
     }
 
-    GameErrors join(Player player) {
+    GameMessage join(Player player) {
         if (players.contains(player)) {
             throw new GameError(GameErrors.INVALID, ErrorMessages.PLAYER_CANNOT_JOIN_MORE_THAN_ONCE);
         } else if (!market.getState(LocalDateTime.now(clock)).equals(MarketState.ENROLLMENT_OPEN)) {
@@ -44,7 +44,7 @@ class Game {
         }
     }
 
-    GameErrors submitOffer(Offer offer) {
+    GameMessage submitOffer(Offer offer) {
         isMarketClosed();
         tradeValidation.isValidOffer(offer);
         List<Offer> referenceList = new ArrayList<>(offerList);
@@ -53,27 +53,27 @@ class Game {
         return GameErrors.ACCEPTED;
     }
 
-    GameErrors removeOffer(Offer offer) {
+    GameMessage removeOffer(Offer offer) {
         isMarketClosed();
 
         offerList.remove(offer);
         return GameErrors.REMOVED;
     }
 
-    GameErrors submitBid(Bid bid) {
+    GameMessage submitBid(Bid bid) {
         isMarketClosed();
         tradeValidation.isValidBid(bid);
         bids.add(bid);
         return GameErrors.ACCEPTED;
     }
 
-    GameErrors removeBid(Bid bid) {
+    GameMessage removeBid(Bid bid) {
         isMarketClosed();
         bids.remove(bid);
         return GameErrors.REMOVED;
     }
 
-    GameErrors acceptBid(Bid bid, Commodity commodity) {
+    GameMessage acceptBid(Bid bid, Commodity commodity) {
         isMarketClosed();
         if (tradeValidation.playerCanSatisfyTrade(bid.getOwner(), bid.getAmount(), commodity)) {
             List<Offer> referenceList = new ArrayList<>(offerList);
