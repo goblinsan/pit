@@ -29,7 +29,7 @@ public class MarketStateRulesTest {
         try {
             testObject.getEnrollmentOpen();
         } catch (MarketSchedule e) {
-            assertEquals(GameErrors.UNSCHEDULED, e.getStatus());
+            assertEquals(GameResponse.UNSCHEDULED, e.getStatus());
             assertEquals(ErrorMessages.MARKET_NOT_SCHEDULED, e.getMessage());
             return;
         }
@@ -39,7 +39,7 @@ public class MarketStateRulesTest {
     @Test
     public void canScheduleEnrollmentWhenMarketIsClosed() {
         LocalDateTime expectedStartTime = LocalDateTime.now().plusMinutes(5);
-        assertEquals(GameErrors.SCHEDULED, testObject.scheduleEnrollment(expectedStartTime));
+        assertEquals(GameResponse.SCHEDULED, testObject.scheduleEnrollment(expectedStartTime));
         assertEquals(expectedStartTime, testObject.getEnrollmentOpen());
     }
 

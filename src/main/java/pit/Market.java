@@ -25,12 +25,12 @@ class Market {
         }
     }
 
-    GameErrors scheduleEnrollment(LocalDateTime startTime) {
+    GameResponse scheduleEnrollment(LocalDateTime startTime) {
         enrollmentStart = startTime;
         enrollmentEnd = startTime.plusMinutes(1);
         marketStart = startTime.plusMinutes(2);
         marketEnd = startTime.plusMinutes(7);
-        return GameErrors.SCHEDULED;
+        return GameResponse.SCHEDULED;
     }
 
     LocalDateTime getEnrollmentOpen() {
@@ -53,7 +53,7 @@ class Market {
 
     private void isEnrollmentUnscheduled() {
         if (enrollmentStart.isEqual(timeInit) || enrollmentEnd.isEqual(timeInit)) {
-            throw new MarketSchedule(GameErrors.UNSCHEDULED, ErrorMessages.MARKET_NOT_SCHEDULED);
+            throw new MarketSchedule(GameResponse.UNSCHEDULED, ErrorMessages.MARKET_NOT_SCHEDULED);
         }
     }
 }

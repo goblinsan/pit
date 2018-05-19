@@ -35,12 +35,12 @@ class Game {
 
     GameMessage join(Player player) {
         if (players.contains(player)) {
-            throw new GameError(GameErrors.INVALID, ErrorMessages.PLAYER_CANNOT_JOIN_MORE_THAN_ONCE);
+            throw new GameError(GameResponse.INVALID, ErrorMessages.PLAYER_CANNOT_JOIN_MORE_THAN_ONCE);
         } else if (!market.getState(LocalDateTime.now(clock)).equals(MarketState.ENROLLMENT_OPEN)) {
             throw new MarketSchedule(MarketState.ENROLLMENT_CLOSED, ErrorMessages.ENROLLMENT_NOT_OPEN);
         } else {
             players.add(player);
-            return GameErrors.JOINED;
+            return GameResponse.JOINED;
         }
     }
 
@@ -50,27 +50,27 @@ class Game {
         List<Offer> referenceList = new ArrayList<>(offerList);
         referenceList.stream().filter(o -> offer.getPlayer().equals(o.getPlayer())).findAny().map(o -> offerList.remove(o));
         offerList.add(offer);
-        return GameErrors.ACCEPTED;
+        return GameResponse.ACCEPTED;
     }
 
     GameMessage removeOffer(Offer offer) {
         isMarketClosed();
 
         offerList.remove(offer);
-        return GameErrors.REMOVED;
+        return GameResponse.REMOVED;
     }
 
     GameMessage submitBid(Bid bid) {
         isMarketClosed();
         tradeValidation.isValidBid(bid);
         bids.add(bid);
-        return GameErrors.ACCEPTED;
+        return GameResponse.ACCEPTED;
     }
 
     GameMessage removeBid(Bid bid) {
         isMarketClosed();
         bids.remove(bid);
-        return GameErrors.REMOVED;
+        return GameResponse.REMOVED;
     }
 
     GameMessage acceptBid(Bid bid, Commodity commodity) {
@@ -85,10 +85,10 @@ class Game {
             }
             bank.updateHoldings(bid, commodity);
             trades.add(new Trade(bid.getRequester(), bid.getOwner(), bid.getAmount()));
-            return GameErrors.ACCEPTED;
+            return GameResponse.ACCEPTED;
         }
 
-        throw new BidOutOfBounds(GameErrors.INVALID, ErrorMessages.PLAYER_CANNOT_SATISFY_BID);
+        throw new BidOutOfBounds(GameResponse.INVALID, ErrorMessages.PLAYER_CANNOT_SATISFY_BID);
     }
 
     List<Offer> getOffers() {
@@ -113,4 +113,7 @@ class Game {
         }
     }
 
+    GameMessage cornerMarket(Player player, Commodity commodity) {
+        return null;
+    }
 }

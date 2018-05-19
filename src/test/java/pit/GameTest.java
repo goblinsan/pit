@@ -53,8 +53,8 @@ public class GameTest {
     @Test
     public void canPlayerCanJoin() {
         Mockito.when(mockMarket.getState(Mockito.any(LocalDateTime.class))).thenReturn(MarketState.ENROLLMENT_OPEN);
-        GameErrors expectedResponse = GameErrors.JOINED;
-        GameErrors actualResponse = testObject.join(player1);
+        GameResponse expectedResponse = GameResponse.JOINED;
+        GameMessage actualResponse = testObject.join(player1);
 
         assertEquals(expectedResponse, actualResponse);
         assertEquals(1, testObject.getPlayers().size());
@@ -126,5 +126,12 @@ public class GameTest {
         List<Trade> actualTrades = testObject.getTrades();
         assertEquals(1, actualTrades.size());
         assertThat(expectedTrades, is(actualTrades));
+    }
+
+    @Test
+    public void playerWins() {
+        GameMessage actualMessage = testObject.cornerMarket(player1, Commodity.GOLD);
+
+        assertEquals(GameResponse.ACCEPTED, actualMessage);
     }
 }

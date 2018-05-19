@@ -61,9 +61,9 @@ public class BidTest {
 
     @Test
     public void submitAndGetBid() {
-        GameErrors actualResponse = testObject.submitBid(goodBid);
+        GameMessage actualResponse = testObject.submitBid(goodBid);
 
-        assertEquals(GameErrors.ACCEPTED, actualResponse);
+        assertEquals(GameResponse.ACCEPTED, actualResponse);
         assertEquals(1, testObject.getBids().size());
         assertEquals(requester.getName(), testObject.getBids().get(0).getRequester().getName());
         assertEquals(2, testObject.getBids().get(0).getAmount());
@@ -74,8 +74,8 @@ public class BidTest {
         testObject.submitBid(goodBid);
         assertEquals(1, testObject.getBids().size());
 
-        GameErrors actualResponse = testObject.removeBid(goodBid);
-        assertEquals(GameErrors.REMOVED, actualResponse);
+        GameMessage actualResponse = testObject.removeBid(goodBid);
+        assertEquals(GameResponse.REMOVED, actualResponse);
         assertEquals(0, testObject.getBids().size());
     }
 
@@ -83,9 +83,9 @@ public class BidTest {
     public void bidsShouldContainAllTheSameCommodity() {
         // API does not allow otherwise - this should be tested at the service level.
 
-        GameErrors actualResponse = testObject.submitBid(goodBid);
+        GameMessage actualResponse = testObject.submitBid(goodBid);
 
-        assertEquals(GameErrors.ACCEPTED, actualResponse);
+        assertEquals(GameResponse.ACCEPTED, actualResponse);
     }
 
     @Test
@@ -110,8 +110,8 @@ public class BidTest {
 
     @Test
     public void ownerCanAcceptBid() {
-        GameErrors actualResponse = testObject.acceptBid(goodBid, Commodity.CATTLE);
-        assertEquals(GameErrors.ACCEPTED, actualResponse);
+        GameMessage actualResponse = testObject.acceptBid(goodBid, Commodity.CATTLE);
+        assertEquals(GameResponse.ACCEPTED, actualResponse);
     }
 
     @Test

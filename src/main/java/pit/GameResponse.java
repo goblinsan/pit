@@ -1,6 +1,6 @@
 package pit;
 
-public enum GameErrors implements GameMessage {
+public enum GameResponse implements GameMessage {
     JOINED,
     ACCEPTED,
     REJECTED,

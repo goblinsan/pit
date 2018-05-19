@@ -104,9 +104,9 @@ public class OfferTest {
         expectedOffer = new Offer(player1, 1);
         expectedOffers.add(expectedOffer);
 
-        GameErrors actualResponse = testObject.submitOffer(expectedOffer);
+        GameMessage actualResponse = testObject.submitOffer(expectedOffer);
 
-        assertEquals(GameErrors.ACCEPTED, actualResponse);
+        assertEquals(GameResponse.ACCEPTED, actualResponse);
         Offer emptyOffer = new Offer(new Player("empty"),0);
         Offer actualOffer = testObject.getOffers().stream().filter(o -> o.getPlayer().equals(player1)).findFirst().orElse(emptyOffer);
         assertEquals(expectedOffers.get(1).getPlayer().getName(), actualOffer.getPlayer().getName());
@@ -119,8 +119,8 @@ public class OfferTest {
         assertEquals(expectedOffers.get(0).getPlayer(), testObject.getOffers().get(0).getPlayer());
         assertEquals(expectedOffers.get(0).getAmount(), testObject.getOffers().get(0).getAmount());
 
-        GameErrors actualResponse = testObject.removeOffer(expectedOffer);
-        assertEquals(GameErrors.REMOVED, actualResponse);
+        GameMessage actualResponse = testObject.removeOffer(expectedOffer);
+        assertEquals(GameResponse.REMOVED, actualResponse);
         assertEquals(0, testObject.getOffers().size());
     }
 
