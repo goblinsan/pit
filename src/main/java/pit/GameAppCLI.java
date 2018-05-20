@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
-public class GameApp {
+public class GameAppCLI {
 
     private static Bank bank = new Bank();
     private static TradeValidation tradeValidation;
@@ -159,6 +159,6 @@ public class GameApp {
     public static void main(String[] args) throws IOException {
         tradeValidation = new TradeValidation(bank);
         game = new Game(bank, tradeValidation, market, gameClock);
-        ShellFactory.createConsoleShell("pit console", "", new GameApp()).commandLoop();
+        ShellFactory.createConsoleShell("pit console", "", new GameAppCLI()).commandLoop();
     }
 }
