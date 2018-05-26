@@ -1,15 +1,7 @@
 export function startGame(){
     fetch("http://localhost:8080/start").then(() => {
         this.setState({gameStarted: true})
-    });
-    fetch("http://localhost:8080/scheduleStrings")
-        .then(res => res.json()
-            .then(result => {
-                this.setState({
-                    schedule: result
-                })
-            })
-        );
+    }).then(() => setTimeout(this.getSchedule, 100));
     this.getGameInfo();
 }
 
