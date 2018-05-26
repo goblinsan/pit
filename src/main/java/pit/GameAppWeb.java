@@ -3,6 +3,7 @@ package pit;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -12,10 +13,12 @@ import pit.errors.GameError;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 @Controller
+@CrossOrigin(origins = "http://localhost:3000")
 @EnableAutoConfiguration
 public class GameAppWeb {
 
@@ -42,7 +45,7 @@ public class GameAppWeb {
     @ResponseBody
     public String join(@PathVariable String name) {
         try {
-            return game.join(new Player(name)).toString();
+            return game.join(new Player(name,0,true)).toString();
         } catch (GameError e) {
             return e.getMessage();
         }
@@ -77,13 +80,26 @@ public class GameAppWeb {
 
     @RequestMapping("/schedule")
     @ResponseBody
-    public String schedule() {
+    public Map<String, LocalDateTime> schedule() {
         Map<String, LocalDateTime> schedule = game.getMarket().getSchedule();
 
-        return "Enrollment Opens : "+ schedule.get("enrollmentStart").toLocalTime().format(formatter) + "\n" +
-                "Enrollment Ends : "+ schedule.get("enrollmentEnd").toLocalTime().format(formatter) + "\n" +
-                "Market Opens : "+ schedule.get("marketStart").toLocalTime().format(formatter) + "\n" +
-                "Market Closes : "+ schedule.get("marketEnd").toLocalTime().format(formatter);
+        return schedule;
+    }
+
+    @RequestMapping("/scheduleStrings")
+    @ResponseBody
+    public Map<String, String> scheduleStrings() {
+        Map<String, LocalDateTime> schedule = game.getMarket().getSchedule();
+        Map<String, String> formatted = new LinkedHashMap<>();
+        schedule.forEach((s, localDateTime) -> formatted.put(s, localDateTime.format(formatter)));
+
+        return formatted;
+    }
+
+    @RequestMapping("/players")
+    @ResponseBody
+    public List<Player> players() {
+        return game.getPlayers();
     }
 
     @RequestMapping("/offer/{name}/{amount}")
@@ -171,23 +187,26 @@ public class GameAppWeb {
 
     @RequestMapping("/offers")
     @ResponseBody
-    public String offers() {
-        List<Offer> offers = game.getOffers();
-        return offers.stream().map(o -> o.getPlayer().getName() + " : " + o.getAmount() + "\n").reduce(String::concat).orElse("");
+    public List<Offer> offers() {
+//        List<Offer> offers = game.getOffers();
+//        return offers.stream().map(o -> o.getPlayer().getName() + " : " + o.getAmount() + "\n").reduce(String::concat).orElse("");
+        return game.getOffers();
     }
 
     @RequestMapping("/bids")
     @ResponseBody
-    public String bids() {
-        List<BidView> bids = game.getBidViews();
-        return bids.stream().map(b -> "Requester: " + b.getRequester().getName() +  " | Owner: "  + b.getOwner().getName() + " | Amount: " + b.getAmount() + "\n").reduce(String::concat).orElse("");
+    public List<BidView> bids() {
+//        List<BidView> bids = game.getBidViews();
+//        return bids.stream().map(b -> "Requester: " + b.getRequester().getName() +  " | Owner: "  + b.getOwner().getName() + " | Amount: " + b.getAmount() + "\n").reduce(String::concat).orElse("");
+        return game.getBidViews();
     }
 
     @RequestMapping("/trades")
     @ResponseBody
-    public String trades() {
-        List<Trade> trades = game.getTrades();
-        return trades.stream().map(t -> t.requester.getName() + " <-> " + t.owner.getName() + " | Amount: " + t.amount  + "\n").reduce(String::concat).orElse("");
+    public List<Trade> trades() {
+//        List<Trade> trades = game.getTrades();
+//        return trades.stream().map(t -> t.requester.getName() + " <-> " + t.owner.getName() + " | Amount: " + t.amount  + "\n").reduce(String::concat).orElse("");
+        return game.getTrades();
     }
 
     public static void main(String[] args) throws Exception {

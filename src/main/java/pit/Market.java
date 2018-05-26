@@ -5,7 +5,7 @@ import pit.errors.MarketSchedule;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 class Market {
@@ -28,7 +28,7 @@ class Market {
     }
 
     Map<String, LocalDateTime> getSchedule() {
-        Map<String, LocalDateTime> schedule = new HashMap<>();
+        Map<String, LocalDateTime> schedule = new LinkedHashMap<>();
         schedule.put("enrollmentStart", enrollmentStart);
         schedule.put("enrollmentEnd", enrollmentEnd);
         schedule.put("marketStart", marketStart);
