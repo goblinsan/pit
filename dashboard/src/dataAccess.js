@@ -1,3 +1,4 @@
+
 export function startGame(){
     fetch("http://localhost:8080/start").then(() => {
         this.setState({gameStarted: true})

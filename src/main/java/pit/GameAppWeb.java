@@ -2,11 +2,7 @@ package pit;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import pit.bank.Bank;
 import pit.errors.GameError;
 
@@ -17,7 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-@Controller
+@RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @EnableAutoConfiguration
 public class GameAppWeb {
@@ -29,19 +25,13 @@ public class GameAppWeb {
     private static Game game;
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-    @RequestMapping("/")
-    @ResponseBody
-    String home() {
-        return "Welcome to Pit!";
-    }
-
     @RequestMapping("/createPlayer/{name}")
     @ResponseBody
     public String createPlayer(@PathVariable String name) {
         return game.createPlayer(name).toString();
     }
 
-    @RequestMapping("/join/{name}")
+    @RequestMapping("join/{name}")
     @ResponseBody
     public String join(@PathVariable String name) {
         try {
@@ -51,8 +41,7 @@ public class GameAppWeb {
         }
     }
 
-    @RequestMapping("/start")
-    @ResponseBody
+    @RequestMapping("start")
     public String start() {
         try {
             return game.getMarket().scheduleEnrollment(LocalDateTime.now(gameClock)).toString();
@@ -188,24 +177,18 @@ public class GameAppWeb {
     @RequestMapping("/offers")
     @ResponseBody
     public List<Offer> offers() {
-//        List<Offer> offers = game.getOffers();
-//        return offers.stream().map(o -> o.getPlayer().getName() + " : " + o.getAmount() + "\n").reduce(String::concat).orElse("");
         return game.getOffers();
     }
 
     @RequestMapping("/bids")
     @ResponseBody
     public List<BidView> bids() {
-//        List<BidView> bids = game.getBidViews();
-//        return bids.stream().map(b -> "Requester: " + b.getRequester().getName() +  " | Owner: "  + b.getOwner().getName() + " | Amount: " + b.getAmount() + "\n").reduce(String::concat).orElse("");
         return game.getBidViews();
     }
 
     @RequestMapping("/trades")
     @ResponseBody
     public List<Trade> trades() {
-//        List<Trade> trades = game.getTrades();
-//        return trades.stream().map(t -> t.requester.getName() + " <-> " + t.owner.getName() + " | Amount: " + t.amount  + "\n").reduce(String::concat).orElse("");
         return game.getTrades();
     }
 
