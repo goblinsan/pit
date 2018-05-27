@@ -1,8 +1,14 @@
 package pit;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import pit.bank.Bank;
 import pit.errors.GameError;
 
@@ -14,8 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
-@EnableAutoConfiguration
+@SpringBootApplication
 public class GameAppWeb {
 
     private static Bank bank = new Bank();
@@ -25,7 +30,7 @@ public class GameAppWeb {
     private static Game game;
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-    @RequestMapping("/createPlayer/{name}")
+    @RequestMapping("createPlayer/{name}")
     @ResponseBody
     public String createPlayer(@PathVariable String name) {
         return game.createPlayer(name).toString();
@@ -50,7 +55,7 @@ public class GameAppWeb {
         }
     }
 
-    @RequestMapping("/hand/{name}")
+    @RequestMapping("hand/{name}")
     @ResponseBody
     public String hand(@PathVariable String name) {
         try {
@@ -61,13 +66,13 @@ public class GameAppWeb {
         }
     }
 
-    @RequestMapping("/time")
+    @RequestMapping("time")
     @ResponseBody
     public String time() {
         return game.getClockTime().toLocalTime().format(formatter);
     }
 
-    @RequestMapping("/schedule")
+    @RequestMapping("schedule")
     @ResponseBody
     public Map<String, LocalDateTime> schedule() {
         Map<String, LocalDateTime> schedule = game.getMarket().getSchedule();
@@ -75,7 +80,7 @@ public class GameAppWeb {
         return schedule;
     }
 
-    @RequestMapping("/scheduleStrings")
+    @RequestMapping("scheduleStrings")
     @ResponseBody
     public Map<String, String> scheduleStrings() {
         Map<String, LocalDateTime> schedule = game.getMarket().getSchedule();
@@ -85,13 +90,13 @@ public class GameAppWeb {
         return formatted;
     }
 
-    @RequestMapping("/players")
+    @RequestMapping("players")
     @ResponseBody
     public List<Player> players() {
         return game.getPlayers();
     }
 
-    @RequestMapping("/offer/{name}/{amount}")
+    @RequestMapping("offer/{name}/{amount}")
     @ResponseBody
     public String offer(@PathVariable String name, @PathVariable int amount) {
         try {
@@ -103,7 +108,7 @@ public class GameAppWeb {
         }
     }
 
-    @RequestMapping("/remove-offer/{name}/{amount}")
+    @RequestMapping("remove-offer/{name}/{amount}")
     @ResponseBody
     public String removeOffer(@PathVariable String name, @PathVariable int amount) {
         try {
@@ -115,7 +120,7 @@ public class GameAppWeb {
         }
     }
 
-    @RequestMapping("/bid/{name}/{ownerName}/{amount}/{commodity}")
+    @RequestMapping("bid/{name}/{ownerName}/{amount}/{commodity}")
     @ResponseBody
     public String submitBid(@PathVariable String name,
                             @PathVariable String ownerName,
@@ -131,7 +136,7 @@ public class GameAppWeb {
         }
     }
 
-    @RequestMapping("/remove-bid/{name}/{ownerName}/{amount}/{commodity}")
+    @RequestMapping("remove-bid/{name}/{ownerName}/{amount}/{commodity}")
     @ResponseBody
     public String removeBid(@PathVariable String name,
                             @PathVariable String ownerName,
@@ -147,7 +152,7 @@ public class GameAppWeb {
         }
     }
 
-    @RequestMapping("/accept-bid/{name}/{ownerName}/{amount}/{commodity}")
+    @RequestMapping("accept-bid/{name}/{ownerName}/{amount}/{commodity}")
     @ResponseBody
     public String acceptBid(@PathVariable String name,
                             @PathVariable String ownerName,
@@ -163,7 +168,7 @@ public class GameAppWeb {
         }
     }
 
-    @RequestMapping("/corner-market/{name}/{commodity}")
+    @RequestMapping("corner-market/{name}/{commodity}")
     @ResponseBody
     public String cornerMarket(@PathVariable String name, @PathVariable String commodity) {
         try {
@@ -174,19 +179,19 @@ public class GameAppWeb {
         }
     }
 
-    @RequestMapping("/offers")
+    @RequestMapping("offers")
     @ResponseBody
     public List<Offer> offers() {
         return game.getOffers();
     }
 
-    @RequestMapping("/bids")
+    @RequestMapping("bids")
     @ResponseBody
     public List<BidView> bids() {
         return game.getBidViews();
     }
 
-    @RequestMapping("/trades")
+    @RequestMapping("trades")
     @ResponseBody
     public List<Trade> trades() {
         return game.getTrades();
@@ -196,5 +201,15 @@ public class GameAppWeb {
         SpringApplication.run(GameAppWeb.class, args);
         tradeValidation = new TradeValidation(bank);
         game = new Game(bank, tradeValidation, market, gameClock);
+    }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer () {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**").allowedOrigins("http://localhost:3000");
+            }
+        };
     }
 }
