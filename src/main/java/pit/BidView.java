@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 @EqualsAndHashCode
-class BidView {
+public class BidView {
     private Player requester;
     private Player owner;
     private int amount;

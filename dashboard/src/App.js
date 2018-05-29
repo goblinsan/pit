@@ -8,89 +8,7 @@ import PlayerTable from "./Players";
 import OfferTable from "./Offers";
 import TradeTable from "./Trades";
 import * as DataAccess from "./dataAccess.js";
-import {BrowserRouter as Router, Link, Redirect, Route, withRouter} from "react-router-dom";
-
-
-const fakeAuth = {
-    isAuthenticated: false,
-    authenticate(cb) {
-        this.isAuthenticated = true;
-        setTimeout(cb, 100); // fake async
-    },
-    signout(cb) {
-        this.isAuthenticated = false;
-        setTimeout(cb, 100);
-    }
-};
-
-const AuthButton = withRouter(
-    ({ history }) =>
-        fakeAuth.isAuthenticated ? (
-            <p>
-                Welcome!{" "}
-                <button
-                    onClick={() => {
-                        fakeAuth.signout(() => history.push("/"));
-                    }}
-                >
-                    Sign out
-                </button>
-            </p>
-        ) : (
-            <p>You are not logged in.</p>
-        )
-);
-
-const PrivateRoute = ({ component: Component, ...rest }) => (
-    <Route
-        {...rest}
-        render={props =>
-            fakeAuth.isAuthenticated ? (
-                <Component {...props} />
-            ) : (
-                <Redirect
-                    to={{
-                        pathname: "/login",
-                        state: { from: props.location }
-                    }}
-                />
-            )
-        }
-    />
-);
-
-const Public = () => <h3>Public</h3>;
-const Chucky = () => <h3>Logged in homie</h3>;
-const Protected = () => <h3>Protected</h3>;
-
-class Login extends React.Component {
-    state = {
-        redirectToReferrer: false
-    };
-
-    login = () => {
-        fakeAuth.authenticate(() => {
-            this.setState({ redirectToReferrer: true });
-        });
-    };
-
-    render() {
-        const { from } = this.props.location.state || { from: { pathname: "/" } };
-        const { redirectToReferrer } = this.state;
-
-        if (redirectToReferrer) {
-            return <Redirect to={from} />;
-        }
-
-        return (
-            <div>
-                <p>You must log in to view the page at {from.pathname}</p>
-                <button onClick={this.login}>Log in</button>
-            </div>
-        );
-    }
-}
-
+import {BrowserRouter as Router} from "react-router-dom";
 
 
 class StartGameButton extends React.Component {
@@ -161,7 +79,16 @@ class App extends Component {
         formData.append("password", this.state.password);
         fetch('http://localhost:8080/login', {
             method: 'POST',
-            body: formData
+            body: formData,
+            credentials: 'include'
+        }).then(function(res) {
+            if (res.ok) {
+                console.log("Logged in");
+            } else if (res.status === 401) {
+                alert("Oops! You are not authorized.");
+            }
+        }, function(e) {
+            alert("Error submitting form!");
         });
     };
 
@@ -169,24 +96,6 @@ class App extends Component {
         return (
             <Router>
                 <div>
-                    <AuthButton />
-                    <ul>
-                        <li>
-                            <Link to="/public">Public Page</Link>
-                        </li>
-                        <li>
-                            <Link to="/protected">Protected Page</Link>
-                        </li>
-                        <li>
-                            <Link to="/chucky">get me chuck</Link>
-                        </li>
-                    </ul>
-                    <Route path="/public" component={Public} />
-                    {/*<Route path="/login" component={Login} />*/}
-                    <Route path="/chucky" component={Chucky}/>
-                    <PrivateRoute path="/protected" component={Protected} />
-
-
                     <div className="App">
                         <Navbar inverse>
                             <Navbar.Header>
@@ -253,46 +162,44 @@ class App extends Component {
                                     </Row>
                                 </Panel.Body>
                             </Panel>
+                            <Panel>
+                                <Panel.Body>
+                                    <div id={"formForLogin"}>
+                                        <form onSubmit={this.handleSubmit}>
+                                            <FormGroup controlId="username" bsSize="large">
+                                                <ControlLabel>User</ControlLabel>
+                                                <FormControl
+                                                    autoFocus
+                                                    type="text"
+                                                    value={this.state.username}
+                                                    onChange={this.onChange}
+                                                />
+                                            </FormGroup>
+                                            <FormGroup controlId="password" bsSize="large">
+                                                <ControlLabel>Password</ControlLabel>
+                                                <FormControl
+                                                    value={this.state.password}
+                                                    onChange={this.onChange}
+                                                    type="password"
+                                                />
+                                            </FormGroup>
+                                            <Button
+                                                block
+                                                bsSize="large"
+                                                disabled={!this.validateForm()}
+                                                type="submit"
+                                            >
+                                                Login
+                                            </Button>
+                                        </form>
+                                    </div>
+                                </Panel.Body>
+                            </Panel>
                         </Grid>
                     </div>
-
-                    <div id={"formForLogin"}>
-                        <form onSubmit={this.handleSubmit}>
-                            <FormGroup controlId="username" bsSize="large">
-                                <ControlLabel>User</ControlLabel>
-                                <FormControl
-                                    autoFocus
-                                    type="text"
-                                    value={this.state.username}
-                                    onChange={this.onChange}
-                                />
-                            </FormGroup>
-                            <FormGroup controlId="password" bsSize="large">
-                                <ControlLabel>Password</ControlLabel>
-                                <FormControl
-                                    value={this.state.password}
-                                    onChange={this.onChange}
-                                    type="password"
-                                />
-                            </FormGroup>
-                            <Button
-                                block
-                                bsSize="large"
-                                disabled={!this.validateForm()}
-                                type="submit"
-                            >
-                                Login
-                            </Button>
-                        </form>
-                    </div>
-
                 </div>
 
-
             </Router>
-
-
-
         );
     }
 }

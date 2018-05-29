@@ -1,14 +1,18 @@
 package pit;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import pit.bank.Bank;
 import pit.errors.BidOutOfBounds;
 import pit.errors.ErrorMessages;
 import pit.errors.OfferOutOfBounds;
 
+@Component
 class TradeValidation {
 
     private Bank bank;
 
+    @Autowired
     TradeValidation(Bank bank) {
         this.bank = bank;
     }

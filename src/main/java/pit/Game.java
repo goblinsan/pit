@@ -1,5 +1,7 @@
 package pit;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import pit.bank.Bank;
 import pit.config.GameSettings;
 import pit.errors.*;
@@ -10,33 +12,34 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-class Game {
+@Component
+public class Game {
     private List<Offer> offerList = new ArrayList<>();
     private List<Bid> bids = new ArrayList<>();
     private List<Trade> trades = new ArrayList<>();
     private List<Player> players = new ArrayList<>();
-    private TradeValidation tradeValidation;
+    private final TradeValidation tradeValidation;
+    private final Bank bank;
+    private final Market market;
+    private final Clock clock;
 
-    private Bank bank;
-    private Market market;
-    private Clock clock;
-
-    Game(Bank bank, TradeValidation tradeValidation, Market market, Clock clock) {
+    @Autowired
+    public Game(Bank bank, TradeValidation tradeValidation, Market market, Clock clock) {
         this.bank = bank;
         this.tradeValidation = tradeValidation;
         this.market = market;
         this.clock = clock;
     }
 
-    LocalDateTime getClockTime() {
+    public LocalDateTime getClockTime() {
         return LocalDateTime.now(clock);
     }
 
-    GameMessage createPlayer(String username) {
+    public GameMessage createPlayer(String username) {
         return GameResponse.CREATED;
     }
 
-    GameMessage join(Player player) {
+    public GameMessage join(Player player) {
         if (players.contains(player)) {
             throw new GameError(GameResponse.INVALID, ErrorMessages.PLAYER_CANNOT_JOIN_MORE_THAN_ONCE);
         } else if (!market.getState(LocalDateTime.now(clock)).equals(MarketState.ENROLLMENT_OPEN)) {
@@ -48,7 +51,7 @@ class Game {
         }
     }
 
-    GameMessage submitOffer(Offer offer) {
+    public GameMessage submitOffer(Offer offer) {
         isMarketClosed();
         tradeValidation.isValidOffer(offer);
         List<Offer> referenceList = new ArrayList<>(offerList);
@@ -57,27 +60,27 @@ class Game {
         return GameResponse.ACCEPTED;
     }
 
-    GameMessage removeOffer(Offer offer) {
+    public GameMessage removeOffer(Offer offer) {
         isMarketClosed();
 
         offerList.remove(offer);
         return GameResponse.REMOVED;
     }
 
-    GameMessage submitBid(Bid bid) {
+    public GameMessage submitBid(Bid bid) {
         isMarketClosed();
         tradeValidation.isValidBid(bid);
         bids.add(bid);
         return GameResponse.ACCEPTED;
     }
 
-    GameMessage removeBid(Bid bid) {
+    public GameMessage removeBid(Bid bid) {
         isMarketClosed();
         bids.remove(bid);
         return GameResponse.REMOVED;
     }
 
-    GameMessage acceptBid(BidView bidView, Commodity commodity) {
+    public GameMessage acceptBid(BidView bidView, Commodity commodity) {
         isMarketClosed();
         Bid bid = getBidFromView(bidView);
         if (tradeValidation.playerCanSatisfyTrade(bidView.getOwner(), bidView.getAmount(), commodity)) {
@@ -109,14 +112,14 @@ class Game {
         );
     }
 
-    GameMessage cornerMarket(Player player, Commodity commodity) {
+    public GameMessage cornerMarket(Player player, Commodity commodity) {
         if (bank.getHoldings().get(player).get(commodity).equals(GameSettings.TOTAL_PER_COMMODITY)){
             return GameResponse.ACCEPTED;
         }
         return GameResponse.REJECTED;
     }
 
-    List<Offer> getOffers() {
+    public List<Offer> getOffers() {
         return offerList;
     }
 
@@ -124,23 +127,23 @@ class Game {
         return bids;
     }
 
-    List<BidView> getBidViews() {
+    public List<BidView> getBidViews() {
         return bids.stream().map(Bid::getView).collect(Collectors.toList());
     }
 
-    List<Trade> getTrades() {
+    public List<Trade> getTrades() {
         return trades;
     }
 
-    List<Player> getPlayers() {
+    public List<Player> getPlayers() {
         return players;
     }
 
-    Market getMarket() {
+    public Market getMarket() {
         return market;
     }
 
-    Bank getBank() {
+    public Bank getBank() {
         return bank;
     }
 

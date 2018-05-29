@@ -1,5 +1,6 @@
 package pit.bank;
 
+import org.springframework.stereotype.Component;
 import pit.Bid;
 import pit.Commodity;
 import pit.Player;
@@ -9,6 +10,7 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
+@Component
 public class Bank {
     Map<Player, EnumMap<Commodity, Integer>> holdings = new HashMap<>();
 

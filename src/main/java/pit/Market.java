@@ -1,5 +1,6 @@
 package pit;
 
+import org.springframework.stereotype.Component;
 import pit.errors.ErrorMessages;
 import pit.errors.MarketSchedule;
 
@@ -8,7 +9,8 @@ import java.time.ZoneOffset;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-class Market {
+@Component
+public class Market {
     private static final LocalDateTime timeInit = LocalDateTime.ofEpochSecond(0,0,ZoneOffset.UTC);
     private LocalDateTime enrollmentStart = timeInit;
     private LocalDateTime enrollmentEnd = timeInit;
@@ -27,7 +29,7 @@ class Market {
         }
     }
 
-    Map<String, LocalDateTime> getSchedule() {
+    public Map<String, LocalDateTime> getSchedule() {
         Map<String, LocalDateTime> schedule = new LinkedHashMap<>();
         schedule.put("enrollmentStart", enrollmentStart);
         schedule.put("enrollmentEnd", enrollmentEnd);
@@ -36,7 +38,7 @@ class Market {
         return schedule;
     }
 
-    GameResponse scheduleEnrollment(LocalDateTime startTime) {
+    public GameResponse scheduleEnrollment(LocalDateTime startTime) {
         enrollmentStart = startTime;
         enrollmentEnd = startTime.plusMinutes(1);
         marketStart = startTime.plusMinutes(2);
