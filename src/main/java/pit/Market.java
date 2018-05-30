@@ -11,14 +11,16 @@ import java.util.Map;
 
 @Component
 public class Market {
-    private static final LocalDateTime timeInit = LocalDateTime.ofEpochSecond(0,0,ZoneOffset.UTC);
+    private static final LocalDateTime timeInit = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
     private LocalDateTime enrollmentStart = timeInit;
     private LocalDateTime enrollmentEnd = timeInit;
     private LocalDateTime marketStart = timeInit;
     private LocalDateTime marketEnd = timeInit;
 
     MarketState getState(LocalDateTime time) {
-        if (time.isAfter(enrollmentStart) && time.isBefore(enrollmentEnd)) {
+        if (enrollmentStart.isEqual(timeInit)) {
+            return MarketState.UNSCHEDULED;
+        } else if (time.isAfter(enrollmentStart) && time.isBefore(enrollmentEnd)) {
             return MarketState.ENROLLMENT_OPEN;
         } else if (time.isAfter(enrollmentEnd) && time.isBefore(marketStart)) {
             return MarketState.ENROLLMENT_CLOSED;

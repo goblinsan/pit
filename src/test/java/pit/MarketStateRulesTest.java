@@ -22,6 +22,12 @@ public class MarketStateRulesTest {
         testObject = new Market();
     }
 
+
+    @Test
+    public void initMarketStateIsUnscheduled() {
+        assertEquals(MarketState.UNSCHEDULED, testObject.getState(LocalDateTime.now()));
+    }
+
     @Test
     public void canGetAllScheduledTimesAsMap() {
         LocalDateTime timeInit = LocalDateTime.ofEpochSecond(0,0,ZoneOffset.UTC);
