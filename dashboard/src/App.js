@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Navbar} from 'react-bootstrap';
+import {Navbar} from 'react-bootstrap';
 import './App.css';
 import * as DataAccess from "./dataAccess.js";
 import {Router} from "react-router-dom";
@@ -8,17 +8,7 @@ import GameDashboard from "./GameDashboard";
 
 const history = createBrowserHistory();
 
-class StartGameButton extends React.Component {
-    render() {
-        if (this.props.gameStarted) {
-            return null;
-        } else {
-            return (
-                <Button bsSize="large" bsStyle="success" onClick={this.props.startGame}>Start Game</Button>
-            );
-        }
-    }
-}
+
 
 class App extends Component {
     constructor(props) {
@@ -80,15 +70,9 @@ class App extends Component {
                                 <Navbar.Brand>
                                     Pit Trading Server
                                 </Navbar.Brand>
-                                <StartGameButton
-                                    gameStarted={this.state.gameStarted}
-                                    startGame={this.startGame}
-                                    gameUpdate={this.getGameInfo}
-                                    onLogin={this.onLogin}
-                                />
                             </Navbar.Header>
                         </Navbar>
-                        <GameDashboard data={this.state} onLogin={this.onLogin} />
+                        <GameDashboard data={this.state} onLogin={this.onLogin} startGame={this.startGame} />
                     </div>
                 </div>
             </Router>
