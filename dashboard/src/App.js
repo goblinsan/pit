@@ -27,6 +27,7 @@ class App extends Component {
             error: null,
             isLoaded: false,
             gameStarted: false,
+            isAuthenticated: false,
             currentTime: null,
             schedule: [],
             players: [],
@@ -37,6 +38,7 @@ class App extends Component {
 
         this.startGame = DataAccess.startGame.bind(this);
         this.getGameInfo = this.getGameInfo.bind(this);
+        this.onLogin = this.onLogin.bind(this);
         this.updateCurrentTime = DataAccess.updateCurrentTime.bind(this);
         this.getSchedule = DataAccess.getSchedule.bind(this);
         this.getPlayers = DataAccess.getPlayers.bind(this);
@@ -53,6 +55,10 @@ class App extends Component {
         this.getOffers();
         this.getBids();
         this.getTrades();
+    }
+
+    onLogin(){
+        this.setState({isAuthenticated: true});
     }
 
     componentDidMount() {
@@ -73,10 +79,11 @@ class App extends Component {
                                     gameStarted={this.state.gameStarted}
                                     startGame={this.startGame}
                                     gameUpdate={this.getGameInfo}
+                                    onLogin={this.onLogin}
                                 />
                             </Navbar.Header>
                         </Navbar>
-                        <GameDashboard data={this.state} />
+                        <GameDashboard data={this.state} onLogin={this.onLogin} />
                     </div>
                 </div>
             </Router>

@@ -65,7 +65,9 @@ class GameDashboard extends React.Component {
                         </Row>
                     </Panel.Body>
                 </Panel>
-                <Route path="/login" exact={true} component={Login} />
+                <Route path="/login" exact={true}
+                       render={props => ( <Login onLogin={this.props.onLogin}  /> )}
+                />
 
             </Grid>
         );

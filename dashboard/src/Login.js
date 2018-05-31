@@ -34,6 +34,7 @@ class Login extends React.Component {
         }).then(function(res) {
             if (res.ok) {
                 console.log("Logged in");
+                currentComponent.props.onLogin();
                 // console.log(res.headers);
                 // currentComponent.props.history.push('/dashboard')
             } else if (res.status === 401) {
