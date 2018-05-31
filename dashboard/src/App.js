@@ -28,6 +28,7 @@ class App extends Component {
             isLoaded: false,
             gameStarted: false,
             isAuthenticated: false,
+            userType: null,
             currentTime: null,
             schedule: [],
             players: [],
@@ -57,11 +58,15 @@ class App extends Component {
         this.getTrades();
     }
 
-    onLogin(){
+    onLogin(token){
         this.setState({isAuthenticated: true});
+        DataAccess.setCookie("PitGame", token);
     }
 
     componentDidMount() {
+        if(DataAccess.getCookie("PitGame")){
+            this.setState({isAuthenticated: true});
+        }
         this.setState({isLoaded: true});
     }
 

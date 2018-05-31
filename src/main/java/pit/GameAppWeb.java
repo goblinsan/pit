@@ -11,7 +11,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @SpringBootApplication
 public class GameAppWeb {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         SpringApplication.run(GameAppWeb.class, args);
     }
 
@@ -20,7 +20,7 @@ public class GameAppWeb {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("http://localhost:3000").allowCredentials(true);
+                registry.addMapping("/**").allowedOrigins("http://localhost:3000").allowCredentials(true).exposedHeaders("usertoken");
             }
         };
     }

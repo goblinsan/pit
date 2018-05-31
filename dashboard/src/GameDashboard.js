@@ -7,7 +7,7 @@ import OfferTable from "./Offers";
 import TradeTable from "./Trades";
 import {Grid, Panel, Row} from "react-bootstrap";
 import Login from "./Login";
-import {Route} from "react-router-dom";
+import {Redirect, Route} from "react-router-dom";
 
 class GameDashboard extends React.Component {
     render () {
@@ -66,7 +66,15 @@ class GameDashboard extends React.Component {
                     </Panel.Body>
                 </Panel>
                 <Route path="/login" exact={true}
-                       render={props => ( <Login onLogin={this.props.onLogin}  /> )}
+                       render={(routerProps) =>
+                           this.props.data.isAuthenticated === false ? ( <Login onLogin={this.props.onLogin}  /> ) :
+                               (<Redirect
+                                   to={{
+                                       pathname: "/dashboard",
+                                       state: { from: routerProps.location }
+                                   }}
+                               />)
+                       }
                 />
 
             </Grid>
