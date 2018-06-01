@@ -2,11 +2,12 @@ import React from "react";
 import {Table} from "react-bootstrap";
 
 class PlayerRow extends React.Component {
+
     render() {
         const player = this.props.player;
         const image = "images/" + this.props.image;
         return (
-            <tr>
+            <tr style={{'backgroundColor' : player.connected ? 'green' : 'white'}}>
                 <td><img src={image} width={50} alt={"avatar for player: " + player.name}/></td>
                 <td>{player.name}</td>
                 <td>{player.score}</td>

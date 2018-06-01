@@ -1,24 +1,4 @@
 
-export function startGame(){
-    fetch("http://localhost:8080/admin/start", {
-        credentials: 'include'
-    })
-    .then( response => {
-        if (!response.ok) { throw response }
-        return response;  //we only get here if there is no error
-    })
-    .then( () => {
-        this.setState({gameStarted: true});
-    })
-    .then( () => setTimeout(this.getSchedule, 100))
-    .then( () => this.getGameInfo())
-    .catch( err => {
-        err.text().then( errorMessage => {
-            alert(errorMessage);
-        })
-    });
-}
-
 export function getSchedule() {
     fetch("http://localhost:8080/scheduleStrings")
         .then(res => res.json()

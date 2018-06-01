@@ -2,6 +2,7 @@ package pit;
 
 public enum GameResponse implements GameMessage {
     JOINED,
+    CONNECTED,
     ACCEPTED,
     REJECTED,
     INVALID,

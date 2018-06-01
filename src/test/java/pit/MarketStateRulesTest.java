@@ -16,6 +16,7 @@ import static org.junit.Assert.*;
 public class MarketStateRulesTest {
 
     private Market testObject;
+    private final LocalDateTime timeInit =LocalDateTime.ofEpochSecond(0,0,ZoneOffset.UTC);
 
     @Before
     public void setUp() {
@@ -30,7 +31,6 @@ public class MarketStateRulesTest {
 
     @Test
     public void canGetAllScheduledTimesAsMap() {
-        LocalDateTime timeInit = LocalDateTime.ofEpochSecond(0,0,ZoneOffset.UTC);
         Map<String, LocalDateTime> expectedSchedule = new HashMap<>();
         expectedSchedule.put("enrollmentStart", timeInit);
         expectedSchedule.put("enrollmentEnd", timeInit);
@@ -62,11 +62,6 @@ public class MarketStateRulesTest {
         LocalDateTime expectedStartTime = LocalDateTime.now().plusMinutes(5);
         assertEquals(GameResponse.SCHEDULED, testObject.scheduleEnrollment(expectedStartTime));
         assertEquals(expectedStartTime, testObject.getEnrollmentOpen());
-    }
-
-    @Test
-    public void cantScheduleEnrollmentWhenClosed() {
-        // TODO: need open logic first
     }
 
     @Test
@@ -103,5 +98,42 @@ public class MarketStateRulesTest {
         assertEquals(MarketState.ENROLLMENT_CLOSED, testObject.getState(LocalDateTime.now().plusMinutes(6)));
         assertEquals(MarketState.OPEN, testObject.getState(LocalDateTime.now().plusMinutes(7)));
         assertEquals(MarketState.CLOSED, testObject.getState(LocalDateTime.now().plusMinutes(12)));
+    }
+
+    @Test
+    public void canManuallyOpenMarket() {
+        LocalDateTime startTime = LocalDateTime.now();
+
+        //create a new schedule first.
+        testObject.scheduleEnrollment(startTime);
+        //assert start and end time of enrollment
+        Map<String, LocalDateTime> initSchedule = testObject.getSchedule();
+        assertEquals(startTime, initSchedule.get("enrollmentStart"));
+        assertEquals(startTime.plusMinutes(1), initSchedule.get("enrollmentEnd"));
+
+
+        //now force an update of market open
+        assertEquals(GameResponse.SCHEDULED, testObject.scheduleMarketOpen(startTime));
+
+        Map<String, LocalDateTime> updatedSchedule = testObject.getSchedule();
+        assertEquals(startTime, updatedSchedule.get("marketStart"));
+        assertEquals(startTime.plusMinutes(5), testObject.getMarketEnd());
+
+        //assert previous states have been unset
+        assertEquals(timeInit, updatedSchedule.get("enrollmentStart"));
+        assertEquals(timeInit, updatedSchedule.get("enrollmentEnd"));
+    }
+
+    @Test
+    public void canManuallyCloseMarket() {
+        LocalDateTime endTime = LocalDateTime.now();
+        assertEquals(GameResponse.SCHEDULED, testObject.scheduleMarketClose(endTime));
+
+        Map<String, LocalDateTime> updatedSchedule = testObject.getSchedule();
+
+        assertEquals(timeInit, updatedSchedule.get("enrollmentStart"));
+        assertEquals(timeInit, updatedSchedule.get("enrollmentEnd"));
+        assertEquals(timeInit, updatedSchedule.get("marketStart"));
+        assertEquals(endTime, updatedSchedule.get("marketEnd"));
     }
 }

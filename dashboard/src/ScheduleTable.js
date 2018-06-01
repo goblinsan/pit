@@ -19,15 +19,6 @@ class ScheduleTable extends React.Component {
     render() {
         const rows = [];
 
-        if (this.props.gameStarted) {
-            rows.push(
-                <ScheduleRow
-                    name={"Current Time"}
-                    value={this.props.currentTime}
-                    key={"currentTime"}/>
-            );
-        }
-
         Object.keys(this.props.schedule).forEach((name) => {
             rows.push(
                 <ScheduleRow

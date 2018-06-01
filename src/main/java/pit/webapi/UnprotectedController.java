@@ -29,6 +29,15 @@ public class UnprotectedController {
         return game.createPlayer(name).toString();
     }
 
+    @RequestMapping("connect/{name}")
+    public String connect(@PathVariable String name) {
+        try {
+            return game.connect(name.toUpperCase()).toString();
+        } catch (GameError e) {
+            return e.getMessage();
+        }
+    }
+
     @RequestMapping("join/{name}")
     public String join(@PathVariable String name) {
         try {
@@ -61,7 +70,7 @@ public class UnprotectedController {
 
     @RequestMapping("players")
     public List<Player> players() {
-        return game.getPlayers();
+        return game.getPlayerMapAsList();
     }
 
     @RequestMapping("offers")

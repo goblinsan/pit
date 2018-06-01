@@ -9,7 +9,6 @@ import GameDashboard from "./GameDashboard";
 const history = createBrowserHistory();
 
 
-
 class App extends Component {
     constructor(props) {
         super(props);
@@ -27,9 +26,9 @@ class App extends Component {
             trades: []
         };
 
-        this.startGame = DataAccess.startGame.bind(this);
         this.getGameInfo = this.getGameInfo.bind(this);
         this.onLogin = this.onLogin.bind(this);
+        this.updateSchedule = this.updateSchedule.bind(this);
         this.updateCurrentTime = DataAccess.updateCurrentTime.bind(this);
         this.getSchedule = DataAccess.getSchedule.bind(this);
         this.getPlayers = DataAccess.getPlayers.bind(this);
@@ -48,16 +47,22 @@ class App extends Component {
         this.getTrades();
     }
 
-    onLogin(token){
+    onLogin(token) {
         this.setState({isAuthenticated: true});
         DataAccess.setCookie("PitGame", token);
     }
 
+    updateSchedule(){
+        this.setState({gameStarted:true});
+        setTimeout(this.getSchedule, 100);
+    }
+
     componentDidMount() {
-        if(DataAccess.getCookie("PitGame")){
+        this.setState({isLoaded: true});
+        if (DataAccess.getCookie("PitGame")) {
             this.setState({isAuthenticated: true});
         }
-        this.setState({isLoaded: true});
+        this.getGameInfo();
     }
 
     render() {
@@ -65,14 +70,14 @@ class App extends Component {
             <Router history={history}>
                 <div>
                     <div className="App">
-                        <Navbar inverse>
+                        <Navbar inverse fluid>
                             <Navbar.Header>
                                 <Navbar.Brand>
                                     Pit Trading Server
                                 </Navbar.Brand>
                             </Navbar.Header>
                         </Navbar>
-                        <GameDashboard data={this.state} onLogin={this.onLogin} startGame={this.startGame} />
+                        <GameDashboard gameData={this.state} onLogin={this.onLogin} updateSchedule={this.updateSchedule} />
                     </div>
                 </div>
             </Router>

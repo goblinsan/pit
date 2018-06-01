@@ -33,7 +33,6 @@ class Login extends React.Component {
             credentials: 'include'
         }).then(function(res) {
             if (res.ok) {
-                console.log("Logged in");
                 currentComponent.props.onLogin(res.headers.get('usertoken'));
                 // console.log(res.headers);
                 // currentComponent.props.history.push('/dashboard')

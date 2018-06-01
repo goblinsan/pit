@@ -7,24 +7,28 @@ import OfferTable from "./Offers";
 import TradeTable from "./Trades";
 import {Grid, Panel, Row} from "react-bootstrap";
 import Login from "./Login";
-import {Redirect, Route} from "react-router-dom";
+import {Route} from "react-router-dom";
 import ControlPanel from "./ControlPanel";
 
 class GameDashboard extends React.Component {
     render () {
         return(
-            <Grid>
+            <Grid fluid={true}>
                 <Panel>
                     <Panel.Body>
                         <Row className="show-grid">
                             <Col md={4} >
                                 <Panel>
-                                    <Panel.Heading>Schedule</Panel.Heading>
+                                    <Panel.Heading>
+                                        Schedule
+                                        <div className="pull-right">
+                                            Server Time : {this.props.gameData.currentTime}
+                                        </div>
+                                    </Panel.Heading>
                                     <Panel.Body>
                                         <ScheduleTable
-                                            currentTime={this.props.data.currentTime}
-                                            schedule={this.props.data.schedule}
-                                            gameStarted={this.props.data.gameStarted}
+                                            schedule={this.props.gameData.schedule}
+                                            gameStarted={this.props.gameData.gameStarted}
                                         />
                                     </Panel.Body>
                                 </Panel>
@@ -33,7 +37,7 @@ class GameDashboard extends React.Component {
                                 <Panel>
                                     <Panel.Heading>Players</Panel.Heading>
                                     <Panel.Body>
-                                        <PlayerTable players={this.props.data.players}/>
+                                        <PlayerTable players={this.props.gameData.players}/>
                                     </Panel.Body>
                                 </Panel>
                             </Col>
@@ -41,7 +45,7 @@ class GameDashboard extends React.Component {
                                 <Panel>
                                     <Panel.Heading>Offers</Panel.Heading>
                                     <Panel.Body>
-                                        <OfferTable offers={this.props.data.offers}/>
+                                        <OfferTable offers={this.props.gameData.offers}/>
                                     </Panel.Body>
                                 </Panel>
                             </Col>
@@ -51,7 +55,7 @@ class GameDashboard extends React.Component {
                                 <Panel>
                                     <Panel.Heading>Bids</Panel.Heading>
                                     <Panel.Body>
-                                        <BidTable bids={this.props.data.bids}/>
+                                        <BidTable bids={this.props.gameData.bids}/>
                                     </Panel.Body>
                                 </Panel>
                             </Col>
@@ -59,23 +63,23 @@ class GameDashboard extends React.Component {
                                 <Panel>
                                     <Panel.Heading>Trades</Panel.Heading>
                                     <Panel.Body>
-                                        <TradeTable trades={this.props.data.trades}/>
+                                        <TradeTable trades={this.props.gameData.trades}/>
                                     </Panel.Body>
                                 </Panel>
                             </Col>
                         </Row>
                     </Panel.Body>
                 </Panel>
-                <ControlPanel startGame={this.props.startGame} />
+                <ControlPanel updateSchedule={this.props.updateSchedule} />
                 <Route path="/login" exact={true}
                        render={(routerProps) =>
-                           this.props.data.isAuthenticated === false ? ( <Login onLogin={this.props.onLogin}  /> ) :
-                               (<Redirect
-                                   to={{
-                                       pathname: "/dashboard",
-                                       state: { from: routerProps.location }
-                                   }}
-                               />)
+                           this.props.gameData.isAuthenticated === false ? ( <Login onLogin={this.props.onLogin}  /> ) : <Login onLogin={this.props.onLogin}  />
+                               // (<Redirect
+                               //     to={{
+                               //         pathname: "/dashboard",
+                               //         state: { from: routerProps.location }
+                               //     }}
+                               // />)
                        }
                 />
 

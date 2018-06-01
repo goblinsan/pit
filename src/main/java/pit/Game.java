@@ -9,7 +9,9 @@ import pit.errors.*;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -22,6 +24,7 @@ public class Game {
     private final Bank bank;
     private final Market market;
     private final Clock clock;
+    private final Map<String, Player> playerMap = new HashMap<>();
 
     @Autowired
     public Game(Bank bank, TradeValidation tradeValidation, Market market, Clock clock) {
@@ -29,6 +32,16 @@ public class Game {
         this.tradeValidation = tradeValidation;
         this.market = market;
         this.clock = clock;
+
+        playerMap.put("JAMES", new Player("JAMES"));
+        playerMap.put("LUKE", new Player("LUKE"));
+        playerMap.put("MASON", new Player("MASON"));
+        playerMap.put("DANI", new Player("DANI"));
+        playerMap.put("WILL", new Player("WILL"));
+        playerMap.put("KIMI", new Player("KIMI"));
+        playerMap.put("CHICO", new Player("CHICO"));
+        playerMap.put("DEBBIE", new Player("DEBBIE"));
+        playerMap.put("OWEN", new Player("OWEN"));
     }
 
     public LocalDateTime getClockTime() {
@@ -37,6 +50,17 @@ public class Game {
 
     public GameMessage createPlayer(String username) {
         return GameResponse.CREATED;
+    }
+
+    public GameMessage connect(String name) {
+        if (!market.getState(LocalDateTime.now(clock)).equals(MarketState.ENROLLMENT_OPEN)) {
+            throw new MarketSchedule(MarketState.ENROLLMENT_CLOSED, ErrorMessages.ENROLLMENT_NOT_OPEN);
+        } else {
+            Player existingPlayer = playerMap.get(name.toUpperCase());
+            playerMap.put(name.toUpperCase(), new Player(name, existingPlayer.getScore(), true));
+            bank.initializeHoldings(playerMap.values().stream().filter(Player::isConnected).collect(Collectors.toList()));
+            return GameResponse.CONNECTED;
+        }
     }
 
     public GameMessage join(Player player) {
@@ -139,6 +163,10 @@ public class Game {
         return players;
     }
 
+    public List<Player> getPlayerMapAsList(){
+        return new ArrayList<>(playerMap.values());
+    }
+
     public Market getMarket() {
         return market;
     }
@@ -151,5 +179,9 @@ public class Game {
         if(!market.getState(LocalDateTime.now(clock)).equals(MarketState.OPEN)){
             throw new MarketSchedule(MarketState.CLOSED, ErrorMessages.MARKET_NOT_OPEN);
         }
+    }
+
+    public void disconnectPlayers() {
+        playerMap.values().forEach(player -> player.setConnected(false));
     }
 }

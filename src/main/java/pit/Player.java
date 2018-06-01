@@ -20,6 +20,10 @@ public class Player {
         this.score = score;
     }
 
+    public void setConnected(boolean connected) {
+        this.connected = connected;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

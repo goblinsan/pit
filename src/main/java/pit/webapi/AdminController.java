@@ -1,11 +1,13 @@
 package pit.webapi;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pit.Game;
-import pit.errors.GameError;
+import pit.GameResponse;
 
 @RestController
 @PreAuthorize("hasRole('ADMIN')")
@@ -19,12 +21,17 @@ public class AdminController {
         this.game = game;
     }
 
-    @RequestMapping("start")
-    public String start() {
-        try {
-            return game.getMarket().scheduleEnrollment(game.getClockTime()).toString();
-        } catch (GameError e) {
-            return e.getMessage();
+    @RequestMapping("schedule/{state}")
+    public ResponseEntity<GameResponse> schedule(@PathVariable("state") String state) {
+        if (state.equalsIgnoreCase("start")) {
+            game.disconnectPlayers();
+            return ResponseEntity.ok(game.getMarket().scheduleEnrollment(game.getClockTime()));
+        } else if (state.equalsIgnoreCase("open")) {
+            return ResponseEntity.ok(game.getMarket().scheduleMarketOpen(game.getClockTime()));
+        } else if (state.equalsIgnoreCase("close")) {
+            return ResponseEntity.ok(game.getMarket().scheduleMarketClose(game.getClockTime()));
         }
+        return ResponseEntity.ok(GameResponse.INVALID);
     }
+
 }
