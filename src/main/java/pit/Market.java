@@ -24,7 +24,7 @@ public class Market {
             return MarketState.ENROLLMENT_CLOSED;
         } else if (time.isAfter(marketStart) && time.isBefore(marketEnd)) {
             return MarketState.OPEN;
-        } else if (time.isAfter(marketEnd) && time.isBefore(enrollmentStart)){
+        } else if (time.isAfter(marketEnd) && time.isAfter(enrollmentStart) && !marketEnd.isEqual(timeInit)){
             return MarketState.CLOSED;
         } else {
             return MarketState.UNSCHEDULED;
