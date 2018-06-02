@@ -77,7 +77,7 @@ class App extends Component {
                                 </Navbar.Brand>
                             </Navbar.Header>
                             <Nav pullRight>
-                                <NavItem componentClass={Link} href="/login" to="/login">Login</NavItem>
+                                <NavItem componentClass={Link} href="/loginForm" to="/loginForm">Login</NavItem>
                             </Nav>
                         </Navbar>
                         <GameDashboard gameData={this.state} onLogin={this.onLogin} updateSchedule={this.updateSchedule} history={history} />

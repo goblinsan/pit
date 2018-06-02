@@ -8,14 +8,14 @@ class ScheduleButton extends React.Component {
     }
 
     schedule() {
-        fetch("http://localhost:8080/admin/schedule/" + this.props.gameState, {
+        fetch("/admin/schedule/" + this.props.gameState, {
             credentials: 'include'
         })
             .then(response => {
                 if (!response.ok) {
                     throw response
                 }
-                return response;  //we only get here if there is no error
+                return response;
             })
             .then(() => {
                 this.props.updateSchedule();

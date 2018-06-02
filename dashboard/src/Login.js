@@ -27,7 +27,7 @@ class Login extends React.Component {
         let formData = new FormData();
         formData.append("username", this.state.username);
         formData.append("password", this.state.password);
-        fetch('http://localhost:8080/login', {
+        fetch('/login', {
             method: 'POST',
             body: formData,
             credentials: 'include'

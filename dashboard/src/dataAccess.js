@@ -1,6 +1,6 @@
 
 export function getSchedule() {
-    fetch("http://localhost:8080/scheduleStrings")
+    fetch("/scheduleStrings")
         .then(res => res.json()
             .then(result => {
                 this.setState({
@@ -11,7 +11,7 @@ export function getSchedule() {
 }
 
 export function getPlayers() {
-    fetch("http://localhost:8080/players")
+    fetch("/players")
         .then(res => res.json()
             .then(result => {
                     this.setState({
@@ -22,7 +22,7 @@ export function getPlayers() {
 }
 
 export function getOffers() {
-    fetch("http://localhost:8080/offers")
+    fetch("/offers")
         .then(res => res.json()
             .then(result => {
                     this.setState({
@@ -33,7 +33,7 @@ export function getOffers() {
 }
 
 export function getBids() {
-    fetch("http://localhost:8080/bids")
+    fetch("/bids")
         .then(res => res.json()
             .then(result => {
                     this.setState({
@@ -44,7 +44,7 @@ export function getBids() {
 }
 
 export function getTrades() {
-    fetch("http://localhost:8080/trades")
+    fetch("/trades")
         .then(res => res.json()
             .then(result => {
                     this.setState({
@@ -55,7 +55,7 @@ export function getTrades() {
 }
 
 export function updateCurrentTime() {
-    fetch("http://localhost:8080/time").then(res => res.text()).then((result) => {
+    fetch("/time").then(res => res.text()).then((result) => {
         this.setState({currentTime: result})
     }).then(() => setTimeout(this.updateCurrentTime, 1000));
 }

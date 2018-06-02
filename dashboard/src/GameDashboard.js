@@ -74,7 +74,7 @@ class GameDashboard extends React.Component {
                                                            <ControlPanel updateSchedule={this.props.updateSchedule}/>) :
                                                        (<Redirect
                                                            to={{
-                                                               pathname: "/login",
+                                                               pathname: "/loginForm",
                                                                state: {from: routerProps.location}
                                                            }}
                                                        />)
@@ -87,7 +87,7 @@ class GameDashboard extends React.Component {
                     </Col>
                 </Row>
 
-                <Route path="/login" exact={true}
+                <Route path="/loginForm" exact={true}
                        render={() => <Login onLogin={this.props.onLogin} history={this.props.history}/>}
                 />
 

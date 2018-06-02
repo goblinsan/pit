@@ -20,7 +20,7 @@ public class GameAppWeb {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("http://localhost:3000").allowCredentials(true).exposedHeaders("usertoken");
+                registry.addMapping("/**").allowedOrigins("*").allowCredentials(true).exposedHeaders("usertoken");
             }
         };
     }
