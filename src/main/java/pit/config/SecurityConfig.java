@@ -46,9 +46,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         UserDetails debbie = User.withDefaultPasswordEncoder().username("DEBBIE").password("password").roles("USER").build();
         UserDetails owen = User.withDefaultPasswordEncoder().username("OWEN").password("password").roles("USER").build();
 
-        UserDetails admin = User.withDefaultPasswordEncoder().username("admin").password("admin").roles("ADMIN").build();
+        UserDetails admin = User.withDefaultPasswordEncoder().username("admin").password("chase123").roles("ADMIN").build();
 
-        return new InMemoryUserDetailsManager(james, admin);
+        return new InMemoryUserDetailsManager(james, luke, mason, dani, will, kimi, chico, debbie, owen, admin);
     }
 
 }

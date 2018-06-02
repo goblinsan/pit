@@ -11,7 +11,6 @@ class PlayerRow extends React.Component {
                 <td><img src={image} width={50} alt={"avatar for player: " + player.name}/></td>
                 <td>{player.name}</td>
                 <td>{player.score}</td>
-                <td>{String(player.connected)}</td>
             </tr>
         );
     }
@@ -37,7 +36,6 @@ class PlayerTable extends React.Component {
                     <th></th>
                     <th>Name</th>
                     <th>Score</th>
-                    <th>Connected</th>
                 </tr>
                 </thead>
                 <tbody>{rows}</tbody>

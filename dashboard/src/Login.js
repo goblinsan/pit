@@ -1,5 +1,5 @@
 import React from "react";
-import {Button, ControlLabel, FormControl, FormGroup, Panel} from "react-bootstrap";
+import {Button, ControlLabel, FormControl, FormGroup, Modal} from "react-bootstrap";
 
 class Login extends React.Component {
     constructor(props) {
@@ -46,8 +46,8 @@ class Login extends React.Component {
 
     render() {
         return (
-            <Panel>
-                <Panel.Body>
+            <Modal.Dialog>
+                <Modal.Body>
                     <div id={"formForLogin"}>
                         <form onSubmit={this.handleSubmit}>
                             <FormGroup controlId="username" bsSize="large">
@@ -77,8 +77,8 @@ class Login extends React.Component {
                             </Button>
                         </form>
                     </div>
-                </Panel.Body>
-            </Panel>
+                </Modal.Body>
+            </Modal.Dialog>
         );
     }
 }

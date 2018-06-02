@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
-import {Navbar} from 'react-bootstrap';
+import {Nav, Navbar, NavItem} from 'react-bootstrap';
 import './App.css';
 import * as DataAccess from "./dataAccess.js";
-import {Router} from "react-router-dom";
+import {Link, Router} from "react-router-dom";
 import createBrowserHistory from 'history/createBrowserHistory';
 import GameDashboard from "./GameDashboard";
 
@@ -70,12 +70,15 @@ class App extends Component {
             <Router history={history}>
                 <div>
                     <div className="App">
-                        <Navbar inverse fluid>
+                        <Navbar inverse fluid staticTop>
                             <Navbar.Header>
                                 <Navbar.Brand>
                                     Pit Trading Server
                                 </Navbar.Brand>
                             </Navbar.Header>
+                            <Nav pullRight>
+                                <NavItem componentClass={Link} href="/login" to="/login">Login</NavItem>
+                            </Nav>
                         </Navbar>
                         <GameDashboard gameData={this.state} onLogin={this.onLogin} updateSchedule={this.updateSchedule} history={history} />
                     </div>

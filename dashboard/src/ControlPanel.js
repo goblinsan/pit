@@ -1,5 +1,5 @@
 import React from "react";
-import {Button, Col, Panel, Row} from "react-bootstrap";
+import {Button, Col, ListGroup, ListGroupItem, Panel, Row} from "react-bootstrap";
 
 class ScheduleButton extends React.Component {
     constructor(props) {
@@ -44,51 +44,31 @@ class ControlPanel extends React.Component {
             <Row className="show-grid">
                 <Col md={12}>
                     <Panel>
+                        <Panel.Heading>Game States</Panel.Heading>
                         <Panel.Body>
-                            <Row className="show-grid">
-                                <Col md={6}>
-                                    <Panel>
-                                        <Panel.Heading>Game States</Panel.Heading>
-                                        <Panel.Body>
-                                            <Row className="show-grid">
-                                                <Col md={4}>
-                                                    <ScheduleButton
-                                                        updateSchedule={this.props.updateSchedule}
-                                                        gameState='start'
-                                                        label='Start Game'
-                                                    />
-                                                </Col>
-                                                <Col md={4}>
-                                                    <ScheduleButton
-                                                        updateSchedule={this.props.updateSchedule}
-                                                        gameState='open'
-                                                        label='Market Open'
-                                                    />
-                                                </Col>
-                                                <Col md={4}>
-                                                    <ScheduleButton
-                                                        updateSchedule={this.props.updateSchedule}
-                                                        gameState='close'
-                                                        label='Market Close'
-                                                    />
-                                                </Col>
-                                            </Row>
-                                        </Panel.Body>
-                                    </Panel>
-                                </Col>
-                                <Col md={6}>
-                                    <Panel>
-                                        <Panel.Heading>Other Controls</Panel.Heading>
-                                        <Panel.Body>
-                                            <Row className="show-grid">
-                                                <Col md={8}>
-                                                    <h3>Something neat...</h3>
-                                                </Col>
-                                            </Row>
-                                        </Panel.Body>
-                                    </Panel>
-                                </Col>
-                            </Row>
+                            <ListGroup>
+                                <ListGroupItem>
+                                    <ScheduleButton
+                                        updateSchedule={this.props.updateSchedule}
+                                        gameState='start'
+                                        label='Start Game'
+                                    />
+                                </ListGroupItem>
+                                <ListGroupItem>
+                                    <ScheduleButton
+                                        updateSchedule={this.props.updateSchedule}
+                                        gameState='open'
+                                        label='Market Open'
+                                    />
+                                </ListGroupItem>
+                                <ListGroupItem>
+                                    <ScheduleButton
+                                        updateSchedule={this.props.updateSchedule}
+                                        gameState='close'
+                                        label='Market Close'
+                                    />
+                                </ListGroupItem>
+                            </ListGroup>
                         </Panel.Body>
                     </Panel>
                 </Col>
