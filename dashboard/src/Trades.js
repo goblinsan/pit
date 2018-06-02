@@ -6,8 +6,8 @@ class TradeRow extends React.Component {
         const trade = this.props.trade;
         return (
             <tr>
-                <td>{trade.requester}</td>
-                <td>{trade.owner}</td>
+                <td>{trade.requester.name}</td>
+                <td>{trade.owner.name}</td>
                 <td>{trade.amount}</td>
             </tr>
         );
@@ -18,11 +18,10 @@ class TradeTable extends React.Component {
     render() {
         const rows = [];
 
-        this.props.trades.forEach((trade) => {
+        this.props.trades.forEach((trade, index) => {
             rows.push(
                 <TradeRow
-                    trade={trade}
-                    key={trade.requester}/>
+                    trade={trade}/>
             );
         });
 

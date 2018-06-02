@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 @EqualsAndHashCode
 public class Trade {
-    Player requester;
-    Player owner;
-    int amount;
+    private Player requester;
+    private Player owner;
+    private int amount;
 }
