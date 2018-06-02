@@ -58,7 +58,7 @@ public class Game {
         } else {
             Player existingPlayer = playerMap.get(name.toUpperCase());
             playerMap.put(name.toUpperCase(), new Player(name, existingPlayer.getScore(), true));
-            bank.initializeHoldings(playerMap.values().stream().filter(Player::isConnected).collect(Collectors.toList()));
+            dealCards();
             return GameResponse.CONNECTED;
         }
     }
@@ -138,6 +138,12 @@ public class Game {
 
     public GameMessage cornerMarket(Player player, Commodity commodity) {
         if (bank.getHoldings().get(player).get(commodity).equals(GameSettings.TOTAL_PER_COMMODITY)){
+            Player existingPlayer = playerMap.get(player.getName());
+            playerMap.put(player.getName(), new Player(player.getName(), Integer.sum(existingPlayer.getScore(),commodity.getMarketValue()), true));
+            offerList = new ArrayList<>();
+            bids = new ArrayList<>();
+            trades = new ArrayList<>();
+            dealCards();
             return GameResponse.ACCEPTED;
         }
         return GameResponse.REJECTED;
@@ -183,5 +189,9 @@ public class Game {
 
     public void disconnectPlayers() {
         playerMap.values().forEach(player -> player.setConnected(false));
+    }
+
+    private void dealCards() {
+        bank.initializeHoldings(playerMap.values().stream().filter(Player::isConnected).collect(Collectors.toList()));
     }
 }

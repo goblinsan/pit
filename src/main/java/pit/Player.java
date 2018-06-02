@@ -1,11 +1,11 @@
 package pit;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
-@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 public class Player {
     private String name;
@@ -13,7 +13,13 @@ public class Player {
     private boolean connected;
 
     public Player(String name){
-        this.name = name;
+        this.name = name.toUpperCase();
+    }
+
+    public Player(String name, int score, boolean connected) {
+        this.name = name.toUpperCase();
+        this.score = score;
+        this.connected = connected;
     }
 
     public void setScore(int score) {

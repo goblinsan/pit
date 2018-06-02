@@ -17,13 +17,13 @@ class App extends Component {
             isLoaded: false,
             gameStarted: false,
             isAuthenticated: false,
-            userType: null,
             currentTime: null,
             schedule: [],
             players: [],
             offers: [],
             bids: [],
-            trades: []
+            trades: [],
+            userType: null,
         };
 
         this.getGameInfo = this.getGameInfo.bind(this);

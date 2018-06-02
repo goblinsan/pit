@@ -153,7 +153,7 @@ public class GameAppCLI {
     @Command
     public String trades() {
         List<Trade> trades = game.getTrades();
-        return trades.stream().map(t -> t.requester.getName() + " <-> " + t.owner.getName() + " | Amount: " + t.amount  + "\n").reduce(String::concat).orElse("");
+        return trades.stream().map(t -> t.getRequester().getName() + " <-> " + t.getOwner().getName() + " | Amount: " + t.getOwner()  + "\n").reduce(String::concat).orElse("");
     }
 
     public static void main(String[] args) throws IOException {

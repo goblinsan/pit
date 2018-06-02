@@ -21,6 +21,17 @@ export function getPlayers() {
             )).then(() => setTimeout(this.getPlayers, 5000));
 }
 
+export function getTrades() {
+    fetch("/trades")
+        .then(res => res.json()
+            .then(result => {
+                    this.setState({
+                        trades: result
+                    })
+                }
+            )).then(() => setTimeout(this.getTrades, 5000));
+}
+
 export function getOffers() {
     fetch("/offers")
         .then(res => res.json()
@@ -41,17 +52,6 @@ export function getBids() {
                     })
                 }
             )).then(() => setTimeout(this.getBids, 5000));
-}
-
-export function getTrades() {
-    fetch("/trades")
-        .then(res => res.json()
-            .then(result => {
-                    this.setState({
-                        trades: result
-                    })
-                }
-            )).then(() => setTimeout(this.getTrades, 5000));
 }
 
 export function updateCurrentTime() {

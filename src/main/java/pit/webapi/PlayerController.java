@@ -116,7 +116,7 @@ public class PlayerController {
     @ResponseBody
     public String cornerMarket(@PathVariable String name, @PathVariable String commodity) {
         try {
-            Player player = new Player(name.toUpperCase());
+            Player player = new Player(name);
             return game.cornerMarket(player, Commodity.valueOf(commodity)).toString();
         } catch (GameError e) {
             return e.getMessage();

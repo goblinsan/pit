@@ -23,7 +23,7 @@ import static org.junit.Assert.*;
 public class GameTest {
 
     private Game testObject;
-    private Player player1 = new Player("player 1");
+    private Player player1 = new Player("james");
 
     private Bank mockBank;
     private TradeValidation mockTradeValidation;

@@ -32,7 +32,7 @@ public class UnprotectedController {
     @RequestMapping("connect/{name}")
     public String connect(@PathVariable String name) {
         try {
-            return game.connect(name.toUpperCase()).toString();
+            return game.connect(name).toString();
         } catch (GameError e) {
             return e.getMessage();
         }
