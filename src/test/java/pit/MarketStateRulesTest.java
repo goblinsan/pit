@@ -41,8 +41,8 @@ public class MarketStateRulesTest {
     }
 
     @Test
-    public void initialStateIsMarketClosed() {
-        assertEquals(MarketState.CLOSED, testObject.getState(LocalDateTime.now()));
+    public void initialStateIsMarketUnscheduled() {
+        assertEquals(MarketState.UNSCHEDULED, testObject.getState(LocalDateTime.now()));
     }
 
     @Test
@@ -93,7 +93,7 @@ public class MarketStateRulesTest {
         LocalDateTime startTime = LocalDateTime.now().plusMinutes(5).minusSeconds(30);
         testObject.scheduleEnrollment(startTime);
 
-        assertEquals(MarketState.CLOSED, testObject.getState(LocalDateTime.now()));
+        assertEquals(MarketState.UNSCHEDULED, testObject.getState(LocalDateTime.now()));
         assertEquals(MarketState.ENROLLMENT_OPEN, testObject.getState(LocalDateTime.now().plusMinutes(5)));
         assertEquals(MarketState.ENROLLMENT_CLOSED, testObject.getState(LocalDateTime.now().plusMinutes(6)));
         assertEquals(MarketState.OPEN, testObject.getState(LocalDateTime.now().plusMinutes(7)));

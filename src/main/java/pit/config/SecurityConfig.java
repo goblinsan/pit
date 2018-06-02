@@ -36,28 +36,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     @Override
     public UserDetailsService userDetailsService() {
-        UserDetails user =
-                User.withDefaultPasswordEncoder()
-                        .username("user")
-                        .password("password")
-                        .roles("USER")
-                        .build();
+        UserDetails james = User.withDefaultPasswordEncoder().username("JAMES").password("password").roles("USER", "ADMIN").build();
+        UserDetails luke = User.withDefaultPasswordEncoder().username("LUKE").password("password").roles("USER").build();
+        UserDetails mason = User.withDefaultPasswordEncoder().username("MASON").password("password").roles("USER").build();
+        UserDetails dani = User.withDefaultPasswordEncoder().username("DANI").password("password").roles("USER").build();
+        UserDetails will = User.withDefaultPasswordEncoder().username("WILL").password("password").roles("USER").build();
+        UserDetails kimi = User.withDefaultPasswordEncoder().username("KIMI").password("password").roles("USER").build();
+        UserDetails chico = User.withDefaultPasswordEncoder().username("CHICO").password("password").roles("USER").build();
+        UserDetails debbie = User.withDefaultPasswordEncoder().username("DEBBIE").password("password").roles("USER").build();
+        UserDetails owen = User.withDefaultPasswordEncoder().username("OWEN").password("password").roles("USER").build();
 
-        UserDetails james =
-                User.withDefaultPasswordEncoder()
-                        .username("JAMES")
-                        .password("password")
-                        .roles("USER")
-                        .build();
+        UserDetails admin = User.withDefaultPasswordEncoder().username("admin").password("admin").roles("ADMIN").build();
 
-        UserDetails admin =
-                User.withDefaultPasswordEncoder()
-                        .username("admin")
-                        .password("admin")
-                        .roles("ADMIN")
-                        .build();
-
-        return new InMemoryUserDetailsManager(user, james, admin);
+        return new InMemoryUserDetailsManager(james, admin);
     }
 
 }

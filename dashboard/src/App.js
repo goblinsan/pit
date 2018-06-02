@@ -77,7 +77,7 @@ class App extends Component {
                                 </Navbar.Brand>
                             </Navbar.Header>
                         </Navbar>
-                        <GameDashboard gameData={this.state} onLogin={this.onLogin} updateSchedule={this.updateSchedule} />
+                        <GameDashboard gameData={this.state} onLogin={this.onLogin} updateSchedule={this.updateSchedule} history={history} />
                     </div>
                 </div>
             </Router>

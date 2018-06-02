@@ -35,7 +35,7 @@ class Login extends React.Component {
             if (res.ok) {
                 currentComponent.props.onLogin(res.headers.get('usertoken'));
                 // console.log(res.headers);
-                // currentComponent.props.history.push('/dashboard')
+                currentComponent.props.history.push('/dashboard')
             } else if (res.status === 401) {
                 alert("Oops! You are not authorized.");
             }

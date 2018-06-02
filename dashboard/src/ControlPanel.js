@@ -78,29 +78,11 @@ class ControlPanel extends React.Component {
                                 </Col>
                                 <Col md={6}>
                                     <Panel>
-                                        <Panel.Heading>Game States</Panel.Heading>
+                                        <Panel.Heading>Other Controls</Panel.Heading>
                                         <Panel.Body>
                                             <Row className="show-grid">
-                                                <Col md={4}>
-                                                    <ScheduleButton
-                                                        updateSchedule={this.props.updateSchedule}
-                                                        gameState='start'
-                                                        label='Start Game'
-                                                    />
-                                                </Col>
-                                                <Col md={4}>
-                                                    <ScheduleButton
-                                                        updateSchedule={this.props.updateSchedule}
-                                                        gameState='open'
-                                                        label='Market Open'
-                                                    />
-                                                </Col>
-                                                <Col md={4}>
-                                                    <ScheduleButton
-                                                        updateSchedule={this.props.updateSchedule}
-                                                        gameState='close'
-                                                        label='Market Close'
-                                                    />
+                                                <Col md={8}>
+                                                    <h3>Something neat...</h3>
                                                 </Col>
                                             </Row>
                                         </Panel.Body>

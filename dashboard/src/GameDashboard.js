@@ -7,7 +7,7 @@ import OfferTable from "./Offers";
 import TradeTable from "./Trades";
 import {Grid, Panel, Row} from "react-bootstrap";
 import Login from "./Login";
-import {Route} from "react-router-dom";
+import {Redirect, Route} from "react-router-dom";
 import ControlPanel from "./ControlPanel";
 
 class GameDashboard extends React.Component {
@@ -70,17 +70,20 @@ class GameDashboard extends React.Component {
                         </Row>
                     </Panel.Body>
                 </Panel>
-                <ControlPanel updateSchedule={this.props.updateSchedule} />
-                <Route path="/login" exact={true}
+                <Route path="/dashboard" exact={true}
                        render={(routerProps) =>
-                           this.props.gameData.isAuthenticated === false ? ( <Login onLogin={this.props.onLogin}  /> ) : <Login onLogin={this.props.onLogin}  />
-                               // (<Redirect
-                               //     to={{
-                               //         pathname: "/dashboard",
-                               //         state: { from: routerProps.location }
-                               //     }}
-                               // />)
+                           this.props.gameData.isAuthenticated === true ? ( <ControlPanel updateSchedule={this.props.updateSchedule}/>) :
+                               (<Redirect
+                                   to={{
+                                       pathname: "/login",
+                                       state: {from: routerProps.location}
+                                   }}
+                               />)
                        }
+                />
+
+                <Route path="/login" exact={true}
+                       render={() => <Login onLogin={this.props.onLogin} history={this.props.history} /> }
                 />
 
             </Grid>
