@@ -13,7 +13,9 @@ Which brings us to...
 ### Prerequisites
 
 There is a runnable jar provided in the "runnable" directory.  So you could just run that.
-If you do want to build Maven will take care of the java dependencies and yarn will handle the frontend build.
+If you do want to build - Maven will take care of the java dependencies and yarn will handle the frontend build.
+This means you'll need an IDE capable of pulling in maven dependencies for the java code, and an IDE that can handle npm and react.
+
 
 ### Running Dev Instances
 
@@ -30,11 +32,13 @@ To start the front-end in dev:
 If you just want to run the jar you'd do something like this:
 
 ```
-sudo su tomcat -s /bin/bash -c "nohup java -jar pit-server-1.0-SNAPSHOT.jar pitserver.log 2>&1 &"
+sudo "nohup java -jar pit-server-1.0-SNAPSHOT.jar pitserver.log 2>&1 &"
 ```
 
 ## Built With
 
+* [Spring Boot](https://spring.io/projects/spring-boot) - Web Framework
+* [React](https://reactjs.org/) - Dashboard Framework
 * [Maven](https://maven.apache.org/) - Dependency Management
 * [Yarn](https://yarnpkg.com) - Frontend Build
 
