@@ -22,16 +22,16 @@ public class AdminController {
     }
 
     @RequestMapping("schedule/{state}")
-    public ResponseEntity<GameResponse> schedule(@PathVariable("state") String state) {
+    public ResponseEntity<String> schedule(@PathVariable("state") String state) {
         if (state.equalsIgnoreCase("start")) {
             game.disconnectPlayers();
-            return ResponseEntity.ok(game.getMarket().scheduleEnrollment(game.getClockTime()));
+            return ResponseEntity.ok(game.getMarket().scheduleEnrollment(game.getClockTime()).toString());
         } else if (state.equalsIgnoreCase("open")) {
-            return ResponseEntity.ok(game.getMarket().scheduleMarketOpen(game.getClockTime()));
+            return ResponseEntity.ok(game.getMarket().scheduleMarketOpen(game.getClockTime()).toString());
         } else if (state.equalsIgnoreCase("close")) {
-            return ResponseEntity.ok(game.getMarket().scheduleMarketClose(game.getClockTime()));
+            return ResponseEntity.ok(game.getMarket().scheduleMarketClose(game.getClockTime()).toString());
         }
-        return ResponseEntity.ok(GameResponse.INVALID);
+        return ResponseEntity.ok(GameResponse.INVALID.toString());
     }
 
 }

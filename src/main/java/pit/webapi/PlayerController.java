@@ -1,6 +1,7 @@
 package pit.webapi;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,6 +9,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import pit.*;
 import pit.errors.GameError;
+
+import java.util.EnumMap;
 
 @RestController
 @PreAuthorize("hasRole('USER')")
@@ -24,14 +27,9 @@ public class PlayerController {
     @PreAuthorize("#name.toUpperCase() == authentication.name")
     @RequestMapping("hand/{name}")
     @ResponseBody
-    public String hand(@PathVariable String name) {
-        try {
-            Player player = new Player(name.toUpperCase());
-
-            return game.getBank().getHoldings().get(player).toString();
-        } catch (GameError e) {
-            return e.getMessage();
-        }
+    public ResponseEntity<EnumMap<Commodity, Integer>> hand(@PathVariable String name) {
+        Player player = new Player(name.toUpperCase());
+        return ResponseEntity.ok(game.getBank().getHoldings().get(player));
     }
 
     @PreAuthorize("#name.toUpperCase() == authentication.name")
