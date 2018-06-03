@@ -192,6 +192,9 @@ public class Game {
     }
 
     private void dealCards() {
+        offerList.clear();
+        bids.clear();
+        trades.clear();
         bank.initializeHoldings(playerMap.values().stream().filter(Player::isConnected).collect(Collectors.toList()));
     }
 }

@@ -50,14 +50,20 @@ public class Bank {
         EnumMap<Commodity, Integer> requesterHolding = holdings.get(bid.getRequester());
         EnumMap<Commodity, Integer> ownerHolding = holdings.get(bid.getOwner());
 
-        Integer updatedRequesterInboundValue = requesterHolding.get(commodity) + bid.getAmount();
+        Integer updatedRequesterInboundValue = bid.getAmount();
+        if (requesterHolding.containsKey(commodity)) {
+            updatedRequesterInboundValue = requesterHolding.get(commodity) + bid.getAmount();
+        }
         Integer updatedRequesterOutboundValue = requesterHolding.get(bid.getCommodity()) - bid.getAmount();
 
         requesterHolding.put(commodity, updatedRequesterInboundValue);
         requesterHolding.put(bid.getCommodity(), updatedRequesterOutboundValue);
         holdings.put(bid.getRequester(), requesterHolding);
 
-        Integer updatedOwnerInboundValue = ownerHolding.get(bid.getCommodity()) + bid.getAmount();
+        Integer updatedOwnerInboundValue = bid.getAmount();
+        if (ownerHolding.containsKey(bid.getCommodity())) {
+            updatedOwnerInboundValue = ownerHolding.get(bid.getCommodity()) + bid.getAmount();
+        }
         Integer updatedOwnerOutboundValue = ownerHolding.get(commodity) - bid.getAmount();
 
         ownerHolding.put(commodity, updatedOwnerOutboundValue);
