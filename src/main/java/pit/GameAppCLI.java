@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class GameAppCLI {
 
@@ -140,7 +141,7 @@ public class GameAppCLI {
 
     @Command
     public String offers() {
-        List<Offer> offers = game.getOffers();
+        Set<Offer> offers = game.getOffers();
         return offers.stream().map(o -> o.getPlayer().getName() + " : " + o.getAmount() + "\n").reduce(String::concat).orElse("");
     }
 

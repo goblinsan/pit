@@ -64,8 +64,8 @@ public class BidTest {
 
         assertEquals(GameResponse.ACCEPTED, actualResponse);
         assertEquals(1, testObject.getBids().size());
-        assertEquals(requester.getName(), testObject.getBids().get(0).getRequester().getName());
-        assertEquals(2, testObject.getBids().get(0).getAmount());
+        assertTrue(testObject.getBids().contains(goodBid));
+        assertEquals(1, testObject.getBids().size());
     }
 
     @Test

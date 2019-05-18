@@ -26,8 +26,6 @@ public class OfferTest {
     private List<Offer> expectedOffers = new ArrayList<>();
     private Offer expectedOffer;
     private Offer expectedOffer2;
-    private Map<Player, EnumMap<Commodity, Integer>> mockHoldings;
-    private Bank mockBank;
     private Market mockMarket;
     private Clock clock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
 
@@ -47,11 +45,11 @@ public class OfferTest {
         player2Holding.put(Commodity.CATTLE, 2);
         player2Holding.put(Commodity.COCOA, 3);
         player2Holding.put(Commodity.GOLD, 0);
-        mockHoldings = new HashMap<>();
+        Map<Player, EnumMap<Commodity, Integer>> mockHoldings = new HashMap<>();
         mockHoldings.put(player1, player1Holding);
         mockHoldings.put(player2, player2Holding);
 
-        mockBank = Mockito.mock(Bank.class);
+        Bank mockBank = Mockito.mock(Bank.class);
         mockMarket = Mockito.mock(Market.class);
         TradeValidation tradeValidation = new TradeValidation(mockBank);
         testObject = new Game(mockBank, tradeValidation, mockMarket, clock);
@@ -68,11 +66,11 @@ public class OfferTest {
         testObject.submitOffer(expectedOffer);
         testObject.submitOffer(expectedOffer2);
 
-        assertNotNull(testObject.getOffers());
-        assertEquals(expectedOffers.get(0).getPlayer(), testObject.getOffers().get(0).getPlayer());
-        assertEquals(expectedOffers.get(0).getAmount(), testObject.getOffers().get(0).getAmount());
-        assertEquals(expectedOffers.get(1).getPlayer(), testObject.getOffers().get(1).getPlayer());
-        assertEquals(expectedOffers.get(1).getAmount(), testObject.getOffers().get(1).getAmount());
+        Set<Offer> actualOffers = testObject.getOffers();
+        assertNotNull(actualOffers);
+        assertTrue(actualOffers.contains(expectedOffer));
+        assertTrue(actualOffers.contains(expectedOffer2));
+        assertEquals(2, actualOffers.size());
     }
 
     @Test
@@ -116,8 +114,8 @@ public class OfferTest {
     @Test
     public void playerCanRemoveTheirOwnOffer() {
         testObject.submitOffer(expectedOffer);
-        assertEquals(expectedOffers.get(0).getPlayer(), testObject.getOffers().get(0).getPlayer());
-        assertEquals(expectedOffers.get(0).getAmount(), testObject.getOffers().get(0).getAmount());
+        assertEquals(1, testObject.getOffers().size());
+        assertTrue(testObject.getOffers().contains(expectedOffer));
 
         GameMessage actualResponse = testObject.removeOffer(expectedOffer);
         assertEquals(GameResponse.REMOVED, actualResponse);

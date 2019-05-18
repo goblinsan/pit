@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 public class UnprotectedController {
@@ -54,9 +55,7 @@ public class UnprotectedController {
 
     @RequestMapping("schedule")
     public Map<String, LocalDateTime> schedule() {
-        Map<String, LocalDateTime> schedule = game.getMarket().getSchedule();
-
-        return schedule;
+        return game.getMarket().getSchedule();
     }
 
     @RequestMapping("scheduleStrings")
@@ -74,7 +73,7 @@ public class UnprotectedController {
     }
 
     @RequestMapping("offers")
-    public List<Offer> offers() {
+    public Set<Offer> offers() {
         return game.getOffers();
     }
 

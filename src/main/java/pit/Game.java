@@ -8,16 +8,13 @@ import pit.errors.*;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
 public class Game {
-    private List<Offer> offerList = new ArrayList<>();
-    private List<Bid> bids = new ArrayList<>();
+    private Set<Offer> offerSet = new HashSet<>();
+    private Set<Bid> bids = new HashSet<>();
     private List<Trade> trades = new ArrayList<>();
     private List<Player> players = new ArrayList<>();
     private final TradeValidation tradeValidation;
@@ -52,7 +49,7 @@ public class Game {
         return GameResponse.CREATED;
     }
 
-    public GameMessage connect(String name) {
+    public synchronized GameMessage connect(String name) {
         if (!market.getState(LocalDateTime.now(clock)).equals(MarketState.ENROLLMENT_OPEN)) {
             throw new MarketSchedule(MarketState.ENROLLMENT_CLOSED, ErrorMessages.ENROLLMENT_NOT_OPEN);
         } else {
@@ -75,43 +72,45 @@ public class Game {
         }
     }
 
-    public GameMessage submitOffer(Offer offer) {
+    public synchronized GameMessage submitOffer(Offer offer) {
         isMarketClosed();
         tradeValidation.isValidOffer(offer);
-        List<Offer> referenceList = new ArrayList<>(offerList);
-        referenceList.stream().filter(o -> offer.getPlayer().equals(o.getPlayer())).findAny().map(o -> offerList.remove(o));
-        offerList.add(offer);
+        List<Offer> referenceList = new ArrayList<>(offerSet);
+        referenceList.stream().filter(o -> offer.getPlayer().equals(o.getPlayer())).findAny().map(o -> offerSet.remove(o));
+        offerSet.add(offer);
         return GameResponse.ACCEPTED;
     }
 
-    public GameMessage removeOffer(Offer offer) {
+    public synchronized GameMessage removeOffer(Offer offer) {
         isMarketClosed();
 
-        offerList.remove(offer);
+        offerSet.remove(offer);
         return GameResponse.REMOVED;
     }
 
-    public GameMessage submitBid(Bid bid) {
+    public synchronized GameMessage submitBid(Bid bid) {
         isMarketClosed();
         tradeValidation.isValidBid(bid);
         bids.add(bid);
         return GameResponse.ACCEPTED;
     }
 
-    public GameMessage removeBid(Bid bid) {
+    public synchronized GameMessage removeBid(Bid bid) {
         isMarketClosed();
         bids.remove(bid);
         return GameResponse.REMOVED;
     }
 
-    public GameMessage acceptBid(BidView bidView, Commodity commodity) {
+    public synchronized GameMessage acceptBid(BidView bidView, Commodity commodity) {
         isMarketClosed();
         Bid bid = getBidFromView(bidView);
-        if (tradeValidation.playerCanSatisfyTrade(bidView.getOwner(), bidView.getAmount(), commodity)) {
-            List<Offer> referenceList = new ArrayList<>(offerList);
+        boolean ownerSatisfiesTrade = tradeValidation.playerCanSatisfyTrade(bidView.getOwner(), bidView.getAmount(), commodity);
+        boolean requesterSatisfiesTrade = tradeValidation.playerCanSatisfyTrade(bidView.getRequester(), bidView.getAmount(), bid.getCommodity());
+        if (ownerSatisfiesTrade && requesterSatisfiesTrade) {
+            List<Offer> referenceList = new ArrayList<>(offerSet);
             for (Offer o : referenceList) {
                 if (bidView.getRequester().getName().equals(o.getPlayer().getName()) || bidView.getOwner().getName().equals(o.getPlayer().getName())) {
-                    offerList.remove(o);
+                    offerSet.remove(o);
                 }
                 bids.remove(bid);
             }
@@ -136,12 +135,12 @@ public class Game {
         );
     }
 
-    public GameMessage cornerMarket(Player player, Commodity commodity) {
+    public synchronized GameMessage cornerMarket(Player player, Commodity commodity) {
         if (bank.getHoldings().get(player).get(commodity).equals(GameSettings.TOTAL_PER_COMMODITY)){
             Player existingPlayer = playerMap.get(player.getName());
-            playerMap.put(player.getName(), new Player(player.getName(), Integer.sum(existingPlayer.getScore(),commodity.getMarketValue()), true));
-            offerList = new ArrayList<>();
-            bids = new ArrayList<>();
+            playerMap.put(player.getName(), new Player(player.getName(), Integer.sum(existingPlayer.getScore(), 1), true));
+            offerSet = new HashSet<>();
+            bids = new HashSet<>();
             trades = new ArrayList<>();
             dealCards();
             return GameResponse.ACCEPTED;
@@ -149,15 +148,15 @@ public class Game {
         return GameResponse.REJECTED;
     }
 
-    public List<Offer> getOffers() {
-        return offerList;
+    public synchronized Set<Offer> getOffers() {
+        return offerSet;
     }
 
-    List<Bid> getBids() {
+    synchronized Set<Bid> getBids() {
         return bids;
     }
 
-    public List<BidView> getBidViews() {
+    public synchronized List<BidView> getBidViews() {
         return bids.stream().map(Bid::getView).collect(Collectors.toList());
     }
 
@@ -192,7 +191,7 @@ public class Game {
     }
 
     private void dealCards() {
-        offerList.clear();
+        offerSet.clear();
         bids.clear();
         trades.clear();
         bank.initializeHoldings(playerMap.values().stream().filter(Player::isConnected).collect(Collectors.toList()));

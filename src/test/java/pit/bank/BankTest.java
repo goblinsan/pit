@@ -59,30 +59,27 @@ public class BankTest {
     public void acceptBidUpdatesGameState() {
         /*
             -- Beginning holdings:
-            --- player 1 : 5 gold
+            --- player 1 : 3 Gold, 4 Oil
             --- player 2 : 4 oil, 0 Gold
 
-            -- Trade (Player 1 bids the 2 commodities that player 2 is offering)
-            --- p1 -> p2 : 2 Gold
-            --- p2 -> p1 : 2 Oil
+            -- Trade (Player 1 bids for 3 commodities that player 2 is offering)
+            --- p1 -> p2 : 3 Gold
+            --- p2 -> p1 : 3 Oil
 
             -- Resulting holdings:
-            --- player 1 : 3 Gold, 2 Oil
-            --- player 2 : 2 Oil, 2 Gold
+            --- player 1 : 0 Gold, 7 Oil
+            --- player 2 : 1 Oil, 3 Gold
 
          */
 
         Bid bid = new Bid(player1, player2, 3, Commodity.GOLD);
         EnumMap<Commodity, Integer> player1Holding = new EnumMap<>(Commodity.class);
-        player1Holding.put(Commodity.GOLD, 5);
+        player1Holding.put(Commodity.GOLD,3);
         player1Holding.put(Commodity.OIL, 4);
         EnumMap<Commodity, Integer> player2Holding = new EnumMap<>(Commodity.class);
         player2Holding.put(Commodity.OIL, 4);
         player2Holding.put(Commodity.GOLD, 0);
         Map<Player, EnumMap<Commodity, Integer>> holdings = new HashMap<>();
-        holdings.put(player1, player1Holding);
-        holdings.put(player2, player2Holding);
-
         holdings.put(player1, player1Holding);
         holdings.put(player2, player2Holding);
 
@@ -92,7 +89,7 @@ public class BankTest {
 
         // Assert end state of holdings
         //player one post
-        assertEquals(2, testObject.getHoldings().get(player1).get(Commodity.GOLD).intValue());
+        assertEquals(0, testObject.getHoldings().get(player1).get(Commodity.GOLD).intValue());
         assertEquals(7, testObject.getHoldings().get(player1).get(Commodity.OIL).intValue());
         //player 2 post
         assertEquals(1, testObject.getHoldings().get(player2).get(Commodity.OIL).intValue());
